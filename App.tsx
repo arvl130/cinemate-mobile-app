@@ -70,7 +70,11 @@ const AuthenticatedTab = createBottomTabNavigator()
 
 function AuthenticatedTabs() {
   return (
-    <AuthenticatedTab.Navigator>
+    <AuthenticatedTab.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <AuthenticatedTab.Screen name="Home Tab" component={HomeTab} />
       <AuthenticatedTab.Screen name="Friends Tab" component={FriendsTab} />
       <AuthenticatedTab.Screen name="Schedules Tab" component={SchedulesTab} />

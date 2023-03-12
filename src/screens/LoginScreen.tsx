@@ -8,6 +8,9 @@ import {
 } from "react-native"
 import { Dimensions } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { auth } from "../firebase"
+import { useState } from "react"
 
 function AppName() {
   return (
@@ -26,7 +29,13 @@ function AppName() {
   )
 }
 
-function SignInForm({ onSubmitFn }: { onSubmitFn: () => void }) {
+function SignInForm({
+  onSubmitFn,
+}: {
+  onSubmitFn: (email: string, password: string) => Promise<void>
+}) {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   return (
     <View className="px-12">
       <Text className="text-white my-1 font-medium">EMAIL</Text>
@@ -34,19 +43,22 @@ function SignInForm({ onSubmitFn }: { onSubmitFn: () => void }) {
         placeholder="email here"
         className="[background-color:_#393737] px-4 py-2 rounded-md text-white"
         placeholderTextColor={"#6F6969"}
+        onChangeText={(text) => setEmail(text)}
       />
       <Text className="text-white my-1 font-medium">PASSWORD</Text>
       <TextInput
         placeholder="password here"
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-1 text-white"
         placeholderTextColor={"#6F6969"}
+        secureTextEntry={true}
+        onChangeText={(text) => setPassword(text)}
       />
       <Text className="text-white mb-6 text-right text-xs font-medium">
         FORGOT?
       </Text>
       <TouchableOpacity
         className="[background-color:_#FE6007] rounded-md"
-        onPress={onSubmitFn}
+        onPress={() => onSubmitFn(email, password)}
       >
         <Text className="text-white text-center py-3 font-medium">LOGIN</Text>
       </TouchableOpacity>
@@ -92,6 +104,7 @@ function NewHereSection({ gotoSignUpFn }: { gotoSignUpFn: () => void }) {
 type LoginScreenProps = NativeStackScreenProps<{
   Login: undefined
   "Sign Up": undefined
+  "Authenticated Tabs": undefined
 }>
 
 export function LoginScreen({ navigation }: LoginScreenProps) {
@@ -110,7 +123,12 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
       </ImageBackground>
 
       <AppName />
-      <SignInForm onSubmitFn={() => {}} />
+      <SignInForm
+        onSubmitFn={async (email, password) => {
+          await signInWithEmailAndPassword(auth, email, password)
+          navigation.navigate("Authenticated Tabs")
+        }}
+      />
       <SignInWithSection />
       <NewHereSection
         gotoSignUpFn={() => {
