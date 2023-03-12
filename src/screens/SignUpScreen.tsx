@@ -9,6 +9,10 @@ import {
   Dimensions,
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
+import { auth } from "../firebase"
+import { updateProfile } from "firebase/auth"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { useState } from "react"
 
 function AppName() {
   return (
@@ -27,7 +31,15 @@ function AppName() {
   )
 }
 
-function SignUpForm({ onSubmitFn }: { onSubmitFn: () => void }) {
+function SignUpForm({
+  onSubmitFn,
+}: {
+  onSubmitFn: (name: string, email: string, password: string) => Promise<void>
+}) {
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
   return (
     <View>
       <Text className="text-white my-1 font-medium">NAME</Text>
@@ -35,12 +47,14 @@ function SignUpForm({ onSubmitFn }: { onSubmitFn: () => void }) {
         placeholder="name here"
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-1 text-white"
         placeholderTextColor={"#6F6969"}
+        onChangeText={(text) => setName(text)}
       />
       <Text className="text-white my-1 font-medium">EMAIL</Text>
       <TextInput
         placeholder="email here"
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-1 text-white"
         placeholderTextColor={"#6F6969"}
+        onChangeText={(text) => setEmail(text)}
       />
       <Text className="text-white my-1 font-medium">PASSWORD</Text>
       <TextInput
@@ -48,10 +62,11 @@ function SignUpForm({ onSubmitFn }: { onSubmitFn: () => void }) {
         secureTextEntry={true}
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-6 text-white"
         placeholderTextColor={"#6F6969"}
+        onChangeText={(text) => setPassword(text)}
       />
       <TouchableOpacity
         className="[background-color:_#FE6007] rounded-md"
-        onPress={onSubmitFn}
+        onPress={() => onSubmitFn(name, email, password)}
       >
         <Text className="text-white text-center py-3 font-medium">
           CREATE AN ACCOUNT
@@ -111,8 +126,15 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
       <View className="px-12">
         <AppName />
         <SignUpForm
-          onSubmitFn={() => {
-            navigation.navigate("Login")
+          onSubmitFn={async (name, email, password) => {
+            const { user } = await createUserWithEmailAndPassword(
+              auth,
+              email,
+              password
+            )
+            await updateProfile(user, {
+              displayName: name,
+            })
           }}
         />
         <SignUpWithSocialMedia />
