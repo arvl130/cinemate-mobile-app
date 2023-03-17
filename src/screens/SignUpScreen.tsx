@@ -47,6 +47,7 @@ function SignUpForm({
         placeholder="name here"
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-1 text-white"
         placeholderTextColor={"#6F6969"}
+        value={name}
         onChangeText={(text) => setName(text)}
       />
       <Text className="text-white my-1 font-medium">EMAIL</Text>
@@ -54,6 +55,7 @@ function SignUpForm({
         placeholder="email here"
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-1 text-white"
         placeholderTextColor={"#6F6969"}
+        value={email}
         onChangeText={(text) => setEmail(text)}
       />
       <Text className="text-white my-1 font-medium">PASSWORD</Text>
@@ -62,11 +64,18 @@ function SignUpForm({
         secureTextEntry={true}
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-6 text-white"
         placeholderTextColor={"#6F6969"}
+        value={password}
         onChangeText={(text) => setPassword(text)}
       />
       <TouchableOpacity
+        activeOpacity={0.8}
         className="[background-color:_#FE6007] rounded-md"
-        onPress={() => onSubmitFn(name, email, password)}
+        onPress={async () => {
+          await onSubmitFn(name, email, password)
+          setName("")
+          setEmail("")
+          setPassword("")
+        }}
       >
         <Text className="text-white text-center py-3 font-medium">
           CREATE AN ACCOUNT
@@ -119,6 +128,7 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
           onPress={() => {
             navigation.goBack()
           }}
+          activeOpacity={0.5}
         >
           <Ionicons name="arrow-back" size={32} color="white" />
         </TouchableOpacity>
