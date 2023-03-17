@@ -31,8 +31,10 @@ function AppName() {
 
 function SignInForm({
   onSubmitFn,
+  onForgotPasswordFn,
 }: {
   onSubmitFn: (email: string, password: string) => Promise<void>
+  onForgotPasswordFn: () => void
 }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -43,6 +45,7 @@ function SignInForm({
         placeholder="email here"
         className="[background-color:_#393737] px-4 py-2 rounded-md text-white"
         placeholderTextColor={"#6F6969"}
+        value={email}
         onChangeText={(text) => setEmail(text)}
       />
       <Text className="text-white my-1 font-medium">PASSWORD</Text>
@@ -51,14 +54,24 @@ function SignInForm({
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-1 text-white"
         placeholderTextColor={"#6F6969"}
         secureTextEntry={true}
+        value={password}
         onChangeText={(text) => setPassword(text)}
       />
-      <Text className="text-white mb-6 text-right text-xs font-medium">
-        FORGOT?
-      </Text>
+      <View className="flex-row justify-end">
+        <TouchableOpacity onPress={onForgotPasswordFn} activeOpacity={0.8}>
+          <Text className="text-white mb-6 text-xs font-medium">
+            FORGOT PASSWORD?
+          </Text>
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity
+        activeOpacity={0.8}
         className="[background-color:_#FE6007] rounded-md"
-        onPress={() => onSubmitFn(email, password)}
+        onPress={async () => {
+          await onSubmitFn(email, password)
+          setEmail("")
+          setPassword("")
+        }}
       >
         <Text className="text-white text-center py-3 font-medium">LOGIN</Text>
       </TouchableOpacity>
@@ -94,7 +107,7 @@ function NewHereSection({ gotoSignUpFn }: { gotoSignUpFn: () => void }) {
   return (
     <View className="flex-row gap-1 justify-center px-12">
       <Text className="text-white">New here?</Text>
-      <TouchableOpacity onPress={gotoSignUpFn}>
+      <TouchableOpacity onPress={gotoSignUpFn} activeOpacity={0.8}>
         <Text className="[color:_#FE6007] underline">Create an account.</Text>
       </TouchableOpacity>
     </View>
@@ -105,6 +118,7 @@ type LoginScreenProps = NativeStackScreenProps<{
   Login: undefined
   "Sign Up": undefined
   "Authenticated Tabs": undefined
+  "Forgot Password": undefined
 }>
 
 export function LoginScreen({ navigation }: LoginScreenProps) {
@@ -126,7 +140,9 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
       <SignInForm
         onSubmitFn={async (email, password) => {
           await signInWithEmailAndPassword(auth, email, password)
-          navigation.navigate("Authenticated Tabs")
+        }}
+        onForgotPasswordFn={() => {
+          navigation.navigate("Forgot Password")
         }}
       />
       <SignInWithSection />
