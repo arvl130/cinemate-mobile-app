@@ -9,12 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
 import { useState } from "react"
-import type { Movie } from "../../types/Movie"
+import type { MovieListEntry } from "../../types/Movie"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 
-function SearchResult({ movie }: { movie: Movie }) {
+function SearchResult({ movie }: { movie: MovieListEntry }) {
   const navigation = useNavigation<
     NativeStackNavigationProp<{
       "Movie Details": {
@@ -82,7 +81,7 @@ function SearchSection({
 }) {
   return (
     <>
-      <View className="px-6 mt-1">
+      <View className="px-6 mt-3">
         <LinearGradient
           colors={["rgba(254, 96, 7, 0.3)", "rgba(237, 185, 123, 0.3)"]}
           locations={[0, 1]}
@@ -185,7 +184,7 @@ function SearchResultsSection({
   isLoading,
   isError,
 }: {
-  searchResults: Array<Movie>
+  searchResults: Array<MovieListEntry>
   isLoading: boolean
   isError: boolean
 }) {
@@ -280,18 +279,6 @@ export function SearchScreen({ route }: any) {
       />
 
       <ScrollView>
-        <View className="flex-row items-center py-3 px-6 h-14">
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack()
-            }}
-            activeOpacity={0.5}
-          >
-            <Ionicons name="arrow-back" size={32} color="white" />
-          </TouchableOpacity>
-          <Text className="ml-3 text-white text-lg font-bold">Search</Text>
-        </View>
-
         <SearchSection
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

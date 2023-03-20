@@ -12,7 +12,7 @@ import { LinearGradient } from "expo-linear-gradient"
 import { useRef, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { Movie } from "../../types/Movie"
+import { MovieListEntry } from "../../types/Movie"
 
 function SearchSection() {
   const navigation = useNavigation<
@@ -60,7 +60,7 @@ function SearchSection() {
   )
 }
 
-const NEW_RELEASE_DATA: Array<Movie> = [
+const NEW_RELEASE_DATA: Array<MovieListEntry> = [
   {
     adult: false,
     backdrop_path: "/zxWAv1A34kdYslBi4ekMDtgIGUt.jpg",
@@ -114,7 +114,7 @@ const NEW_RELEASE_DATA: Array<Movie> = [
   },
 ]
 
-function NewReleaseSectionItem({ movie }: { movie: Movie }) {
+function NewReleaseSectionItem({ movie }: { movie: MovieListEntry }) {
   const navigation = useNavigation<
     NativeStackNavigationProp<{
       "Movie Details": {
@@ -152,7 +152,7 @@ function NewReleaseSectionItem({ movie }: { movie: Movie }) {
 
 function NewReleaseSection() {
   const flatList = useRef<FlatList | null>(null)
-  const [currentItem, setCurrentItem] = useState<null | Movie>(null)
+  const [currentItem, setCurrentItem] = useState<null | MovieListEntry>(null)
   const viewabilityConfig = { viewAreaCoveragePercentThreshold: 50 }
   const onViewableItemsChanged = ({
     viewableItems,
@@ -216,7 +216,7 @@ function NewReleaseSection() {
   )
 }
 
-const FOR_YOU_DATA: Array<Movie> = [
+const FOR_YOU_DATA: Array<MovieListEntry> = [
   {
     adult: false,
     backdrop_path: "/vL5LR6WdxWPjLPFRLe133jXWsh5.jpg",
@@ -324,7 +324,7 @@ const MOVIES_TVSHOWS_POPULAR_DATA = [
   },
 ]
 
-function ForYouSectionItem({ movie }: { movie: Movie }) {
+function ForYouSectionItem({ movie }: { movie: MovieListEntry }) {
   const navigation = useNavigation<
     NativeStackNavigationProp<{
       "Movie Details": {

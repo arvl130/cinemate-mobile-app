@@ -123,17 +123,8 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
       >
         <View className="bg-black/50 h-full"></View>
       </ImageBackground>
-      <View className="py-3 px-3">
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack()
-          }}
-          activeOpacity={0.5}
-        >
-          <Ionicons name="arrow-back" size={32} color="white" />
-        </TouchableOpacity>
-      </View>
-      <View className="px-12">
+
+      <View className="px-12 pt-8">
         <AppName />
         <SignUpForm
           onSubmitFn={async (name, email, password) => {

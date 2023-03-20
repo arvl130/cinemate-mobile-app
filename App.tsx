@@ -44,10 +44,19 @@ function HomeTab() {
   return (
     <HomeStack.Navigator
       screenOptions={{
-        headerShown: false,
+        headerStyle: {
+          backgroundColor: "black",
+        },
+        headerTintColor: "white",
       }}
     >
-      <HomeStack.Screen name="Home" component={HomeScreen} />
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <HomeStack.Screen name="Search" component={SearchScreen} />
       <HomeStack.Screen name="Movie Details" component={MovieDetailsScreen} />
     </HomeStack.Navigator>
@@ -104,7 +113,7 @@ type OnboardingScreensProps = NativeStackScreenProps<
 function OnboardingScreens({ navigation }: OnboardingScreensProps) {
   const { isLoading, isAuthenticated } = useAuthState()
   useEffect(() => {
-    if (!isLoading && isAuthenticated) navigation.navigate("Authenticated Tabs")
+    if (!isLoading && isAuthenticated) navigation.replace("Authenticated Tabs")
   }, [isLoading, isAuthenticated])
 
   if (isLoading) return <></>
@@ -112,10 +121,17 @@ function OnboardingScreens({ navigation }: OnboardingScreensProps) {
   return (
     <OnboardingStack.Navigator
       screenOptions={{
-        headerShown: false,
+        headerTransparent: true,
+        headerTintColor: "white",
       }}
     >
-      <OnboardingStack.Screen name="Login" component={LoginScreen} />
+      <OnboardingStack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <OnboardingStack.Screen name="Sign Up" component={SignUpScreen} />
       <OnboardingStack.Screen
         name="Forgot Password"
@@ -133,8 +149,7 @@ type AuthenticatedTabsProps = NativeStackScreenProps<
 function AuthenticatedTabs({ navigation }: AuthenticatedTabsProps) {
   const { isLoading, isAuthenticated } = useAuthState()
   useEffect(() => {
-    if (!isLoading && !isAuthenticated)
-      navigation.navigate("Onboarding Screens")
+    if (!isLoading && !isAuthenticated) navigation.replace("Onboarding Screens")
   }, [isLoading, isAuthenticated])
 
   if (isLoading) return <></>
