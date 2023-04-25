@@ -7,7 +7,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
 } from "@expo-google-fonts/inter"
-import { NavigationContainer } from "@react-navigation/native"
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native"
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
@@ -93,13 +93,17 @@ function SchedulesTab() {
 
 function AccountTab() {
   return (
-    <AccountStack.Navigator>
+    <AccountStack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "black",
+        },
+        headerTintColor: "white",
+      }}
+    >
       <AccountStack.Screen
         name="Account Settings"
         component={AccountSettingsScreen}
-        options={{
-          headerShown: false,
-        }}
       />
     </AccountStack.Navigator>
   )
@@ -212,7 +216,15 @@ function RootNavigation() {
   return (
     <>
       <StatusBar style="light" />
-      <NavigationContainer>
+      <NavigationContainer
+        theme={{
+          ...DefaultTheme,
+          colors: {
+            ...DefaultTheme.colors,
+            background: "black",
+          },
+        }}
+      >
         <AppStack.Navigator
           screenOptions={{
             headerShown: false,
