@@ -7,8 +7,8 @@ import {
   View,
   Text,
   Dimensions,
+  Alert,
 } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
 import { auth } from "../firebase"
 import { updateProfile } from "firebase/auth"
 import { createUserWithEmailAndPassword } from "firebase/auth"
@@ -44,7 +44,7 @@ function SignUpForm({
     <View>
       <Text className="text-white my-1 font-medium">NAME</Text>
       <TextInput
-        placeholder="name here"
+        placeholder="John Doe"
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-1 text-white"
         placeholderTextColor={"#6F6969"}
         value={name}
@@ -52,7 +52,7 @@ function SignUpForm({
       />
       <Text className="text-white my-1 font-medium">EMAIL</Text>
       <TextInput
-        placeholder="email here"
+        placeholder="john@example.com"
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-1 text-white"
         placeholderTextColor={"#6F6969"}
         value={email}
@@ -60,7 +60,7 @@ function SignUpForm({
       />
       <Text className="text-white my-1 font-medium">PASSWORD</Text>
       <TextInput
-        placeholder="password here"
+        placeholder="********"
         secureTextEntry={true}
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-6 text-white"
         placeholderTextColor={"#6F6969"}
@@ -128,14 +128,21 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
         <AppName />
         <SignUpForm
           onSubmitFn={async (name, email, password) => {
-            const { user } = await createUserWithEmailAndPassword(
-              auth,
-              email,
-              password
-            )
-            await updateProfile(user, {
-              displayName: name,
-            })
+            try {
+              const { user } = await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password
+              )
+              await updateProfile(user, {
+                displayName: name,
+              })
+            } catch {
+              Alert.alert(
+                "Invalid",
+                "You have entered an invalid user information."
+              )
+            }
           }}
         />
         <SignUpWithSocialMedia />

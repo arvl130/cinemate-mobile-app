@@ -1,3 +1,5 @@
+import { sendPasswordResetEmail } from "firebase/auth"
+import { useState } from "react"
 import {
   Image,
   ImageBackground,
@@ -5,8 +7,10 @@ import {
   TouchableOpacity,
   View,
   Text,
+  Alert,
 } from "react-native"
 import { Dimensions } from "react-native"
+import { auth } from "../firebase"
 
 function AppName() {
   return (
@@ -26,6 +30,7 @@ function AppName() {
 }
 
 export function ForgotPasswordScreen() {
+  const [email, setEmail] = useState("")
   return (
     <View className="flex-1 relative">
       <ImageBackground
@@ -61,15 +66,36 @@ export function ForgotPasswordScreen() {
       </View>
       <View className="px-6">
         <TextInput
-          placeholder="Email here"
+          placeholder="john@example.com"
           className="[background-color:_#d3d3d3] px-2 py-2 rounded-md text-white mb-3"
           placeholderTextColor={"#000"}
+          value={email}
+          onChangeText={(text) => setEmail(text)}
         />
 
         <View>
           <TouchableOpacity
             className="[background-color:_#FE6007] rounded-md py-3"
             activeOpacity={0.8}
+            onPress={async () => {
+              if (email === "") {
+                Alert.alert("Missing input", "Please enter your email.")
+                return
+              }
+              try {
+                await sendPasswordResetEmail(auth, email)
+                setEmail("")
+                Alert.alert(
+                  "Email sent",
+                  "We have sent your password reset email."
+                )
+              } catch {
+                Alert.alert(
+                  "Error occured",
+                  "There was a problem that occured when sending your password reset email."
+                )
+              }
+            }}
           >
             <Text className="text-white text-center text-base font-semibold">
               SEND EMAIL

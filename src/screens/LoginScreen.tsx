@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   View,
   Text,
+  Alert,
 } from "react-native"
 import { Dimensions } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
@@ -42,7 +43,7 @@ function SignInForm({
     <View className="px-12">
       <Text className="text-white my-1 font-medium">EMAIL</Text>
       <TextInput
-        placeholder="email here"
+        placeholder="john@example.com"
         className="[background-color:_#393737] px-4 py-2 rounded-md text-white"
         placeholderTextColor={"#6F6969"}
         value={email}
@@ -50,7 +51,7 @@ function SignInForm({
       />
       <Text className="text-white my-1 font-medium">PASSWORD</Text>
       <TextInput
-        placeholder="password here"
+        placeholder="********"
         className="[background-color:_#393737] px-4 py-2 rounded-md mb-1 text-white"
         placeholderTextColor={"#6F6969"}
         secureTextEntry={true}
@@ -139,7 +140,14 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
       <AppName />
       <SignInForm
         onSubmitFn={async (email, password) => {
-          await signInWithEmailAndPassword(auth, email, password)
+          try {
+            await signInWithEmailAndPassword(auth, email, password)
+          } catch {
+            Alert.alert(
+              "Invalid",
+              "You have entered an invalid email or password."
+            )
+          }
         }}
         onForgotPasswordFn={() => {
           navigation.navigate("Forgot Password")
