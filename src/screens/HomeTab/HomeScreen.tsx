@@ -52,7 +52,7 @@ function SearchSection() {
             end={{ x: 1, y: 0 }}
             className="rounded-2xl border border-white/20 px-6 py-3"
           >
-            <Text className="text-white/20">Search</Text>
+            <Text className="text-white/20">Search movies ...</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
