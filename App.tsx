@@ -259,6 +259,7 @@ function RootNavigation() {
             name="Create Review"
             component={CreateReviewScreen}
             options={{
+              animation: "slide_from_right",
               headerStyle: {
                 backgroundColor: "black",
               },
@@ -269,6 +270,7 @@ function RootNavigation() {
             name="Edit Review"
             component={EditReviewScreen}
             options={{
+              animation: "slide_from_right",
               headerStyle: {
                 backgroundColor: "black",
               },
