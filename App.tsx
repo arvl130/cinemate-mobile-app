@@ -243,6 +243,7 @@ function RootNavigation() {
             name="Onboarding Screens"
             component={OnboardingScreens}
             options={{
+              animation: "slide_from_left",
               headerShown: false,
             }}
           />
@@ -250,6 +251,7 @@ function RootNavigation() {
             name="Authenticated Tabs"
             component={AuthenticatedTabs}
             options={{
+              animation: "slide_from_right",
               headerShown: false,
             }}
           />
