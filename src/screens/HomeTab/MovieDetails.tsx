@@ -73,7 +73,38 @@ function OverviewSection({ overview }: { overview: string }) {
   return (
     <View>
       <Text className="text-white font-semibold text-base">Overview</Text>
-      <Text className="text-white">{overview}</Text>
+      <Text className="text-white py-3">{overview}</Text>
+      <View className="flex-row flex-2 gap-3">
+        <View className="flex-1">
+          <TouchableOpacity
+            activeOpacity={0.6}
+            className="border-2 [border-color:_#FE6007] [background-color:_#FE6007] rounded-md"
+            onPress={() => {}}
+          >
+            <Text className="text-white text-center py-3 font-medium">
+              Watched Already
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View className="flex-1">
+          <TouchableOpacity
+            activeOpacity={0.6}
+            className="border-2 [border-color:_#FE6007] rounded-md"
+            onPress={() => {}}
+          >
+            <Text className="[color:_#FE6007] text-center py-3 font-medium">
+              Add to Watchlist
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        className="border-2 bg-gray-100 rounded-md mt-3"
+        onPress={() => {}}
+      >
+        <Text className="text-center py-3 font-medium">Schedule</Text>
+      </TouchableOpacity>
     </View>
   )
 }
