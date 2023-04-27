@@ -13,6 +13,7 @@ import { useState } from "react"
 import type { MovieListEntry } from "../../types/Movie"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { getSearchResults } from "../../utils/api"
+import type { Movie } from "tmdb-ts"
 
 function SearchResult({ movie }: { movie: MovieListEntry }) {
   const navigation = useNavigation<
@@ -246,7 +247,7 @@ export function SearchScreen({ route }: any) {
   >()
 
   const [searchTerm, setSearchTerm] = useState("")
-  const [searchResults, setSearchResults] = useState([])
+  const [searchResults, setSearchResults] = useState<Movie[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)

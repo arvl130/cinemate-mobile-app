@@ -1,28 +1,28 @@
 import { LinearGradient } from "expo-linear-gradient"
 import { Dimensions, Image, ScrollView, Text, View } from "react-native"
 import { useEffect, useState } from "react"
-import { GetMovieResult } from "../../types/Movie"
 import { getMovieDetails } from "../../utils/api"
+import type { MovieDetails } from "tmdb-ts"
 
 const { height } = Dimensions.get("window")
 
-function ShortInfo({ movie }: { movie: GetMovieResult }) {
+function ShortInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   return (
     <View className="flex-[0] gap-6 flex-row">
       <View className="flex-[2]">
         <Image
           source={{
-            uri: `https://image.tmdb.org/t/p/original/${movie.poster_path}`,
+            uri: `https://image.tmdb.org/t/p/original/${movieDetails.poster_path}`,
           }}
           className="h-48 w-32 rounded-2xl mb-3"
         />
       </View>
       <View className="flex-[3]">
         <Text className="text-white font-semibold text-xl mb-1">
-          {movie.title}
+          {movieDetails.title}
         </Text>
         <View className="flex-row flex-wrap gap-2 mb-1">
-          {movie.genres.map((genre) => (
+          {movieDetails.genres.map((genre) => (
             <Text
               key={genre.id}
               className="bg-gray-500 rounded-full text-white text-xs px-2 py-1"
@@ -33,11 +33,11 @@ function ShortInfo({ movie }: { movie: GetMovieResult }) {
         </View>
         <View className="mb-3">
           <Text className="text-gray-400">
-            {new Date(movie.release_date).getFullYear()}
+            {new Date(movieDetails.release_date).getFullYear()}
             {" • "}
-            {movie.original_language.toUpperCase()}
+            {movieDetails.original_language.toUpperCase()}
             {" • "}
-            {movie.runtime} min
+            {movieDetails.runtime} min
           </Text>
         </View>
         <View>
@@ -51,11 +51,11 @@ function ShortInfo({ movie }: { movie: GetMovieResult }) {
   )
 }
 
-function LongInfo({ movie }: { movie: GetMovieResult }) {
+function LongInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   return (
     <View>
       <Text className="text-white font-semibold text-base">Overview</Text>
-      <Text className="text-white">{movie.overview}</Text>
+      <Text className="text-white">{movieDetails.overview}</Text>
       <Text className="text-white font-semibold text-base mt-3">
         Ratings & Reviews
       </Text>
@@ -68,11 +68,11 @@ function LongInfo({ movie }: { movie: GetMovieResult }) {
 
 export function MovieDetailsScreen({ route }: any) {
   const { id } = route.params
-  const [movie, setMovie] = useState<GetMovieResult | null>(null)
+  const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null)
 
-  async function getMovie(movieId: string) {
-    const movie = await getMovieDetails(movieId)
-    setMovie(movie)
+  async function getMovie(movieId: number) {
+    const movieDetails = await getMovieDetails(movieId)
+    setMovieDetails(movieDetails)
   }
 
   useEffect(() => {
@@ -88,12 +88,12 @@ export function MovieDetailsScreen({ route }: any) {
           height,
         }}
       />
-      {movie ? (
+      {movieDetails ? (
         <>
           <ScrollView>
             <View className="px-6">
-              <ShortInfo movie={movie} />
-              <LongInfo movie={movie} />
+              <ShortInfo movieDetails={movieDetails} />
+              <LongInfo movieDetails={movieDetails} />
             </View>
           </ScrollView>
         </>
