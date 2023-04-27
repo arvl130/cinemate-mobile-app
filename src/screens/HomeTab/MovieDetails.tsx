@@ -277,11 +277,8 @@ function ReviewSection({ movieId }: { movieId: number }) {
                         {data
                           .filter((review) => review.userId !== user.uid)
                           .map((review) => (
-                            <View className="mt-3">
-                              <ReviewSectionItem
-                                key={review.userId}
-                                review={review}
-                              />
+                            <View key={review.userId} className="mt-3">
+                              <ReviewSectionItem review={review} />
                             </View>
                           ))}
                       </>
