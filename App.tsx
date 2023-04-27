@@ -25,6 +25,7 @@ import { SchedulesScreen } from "./src/screens/SchedulesTab/SchedulesScreen"
 import { AccountSettingsScreen } from "./src/screens/AccountTab/AccountSettingsScreen"
 import { MovieDetailsScreen } from "./src/screens/HomeTab/MovieDetails"
 import { ForgotPasswordScreen } from "./src/screens/ForgotPasswordScreen"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -247,6 +248,8 @@ function RootNavigation() {
   )
 }
 
+const queryClient = new QueryClient()
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -258,10 +261,12 @@ export default function App() {
   if (!fontsLoaded) return <></>
 
   return (
-    <SafeAreaView className="h-full bg-black">
-      <AuthStateProvider>
-        <RootNavigation />
-      </AuthStateProvider>
-    </SafeAreaView>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaView className="h-full bg-black">
+        <AuthStateProvider>
+          <RootNavigation />
+        </AuthStateProvider>
+      </SafeAreaView>
+    </QueryClientProvider>
   )
 }

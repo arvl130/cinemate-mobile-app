@@ -1,8 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient"
 import { Dimensions, Image, ScrollView, Text, View } from "react-native"
-import { useEffect, useState } from "react"
 import { getMovieDetails } from "../../utils/api"
 import type { MovieDetails } from "tmdb-ts"
+import { useQuery } from "@tanstack/react-query"
+import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
 
 const { height } = Dimensions.get("window")
 
@@ -68,16 +69,12 @@ function LongInfo({ movieDetails }: { movieDetails: MovieDetails }) {
 
 export function MovieDetailsScreen({ route }: any) {
   const { id } = route.params
-  const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null)
+  const { isLoading, isError, data, refetch } = useQuery({
+    queryKey: ["movieDetails", id],
+    queryFn: () => getMovieDetails(id),
+  })
 
-  async function getMovie(movieId: number) {
-    const movieDetails = await getMovieDetails(movieId)
-    setMovieDetails(movieDetails)
-  }
-
-  useEffect(() => {
-    getMovie(id)
-  }, [])
+  useRefreshOnFocus(refetch)
 
   return (
     <View>
@@ -88,19 +85,23 @@ export function MovieDetailsScreen({ route }: any) {
           height,
         }}
       />
-      {movieDetails ? (
-        <>
-          <ScrollView>
-            <View className="px-6">
-              <ShortInfo movieDetails={movieDetails} />
-              <LongInfo movieDetails={movieDetails} />
-            </View>
-          </ScrollView>
-        </>
+      {isLoading ? (
+        <Text className="text-white text-center">Loading ...</Text>
       ) : (
-        <View>
-          <Text>Loading ...</Text>
-        </View>
+        <>
+          {isError ? (
+            <Text className="text-white text-center">
+              An error occured while fetching movie details. :{"("}
+            </Text>
+          ) : (
+            <ScrollView>
+              <View className="px-6">
+                <ShortInfo movieDetails={data} />
+                <LongInfo movieDetails={data} />
+              </View>
+            </ScrollView>
+          )}
+        </>
       )}
     </View>
   )
