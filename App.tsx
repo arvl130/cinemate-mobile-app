@@ -26,6 +26,8 @@ import { AccountSettingsScreen } from "./src/screens/AccountTab/AccountSettingsS
 import { MovieDetailsScreen } from "./src/screens/HomeTab/MovieDetails"
 import { ForgotPasswordScreen } from "./src/screens/ForgotPasswordScreen"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { CreateReviewScreen } from "./src/screens/HomeTab/CreateReview"
+import { EditReviewScreen } from "./src/screens/HomeTab/EditReview"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -37,6 +39,12 @@ const AuthenticatedTab = createBottomTabNavigator()
 type AppStackParamList = {
   "Onboarding Screens": undefined
   "Authenticated Tabs": undefined
+  "Create Review": {
+    movieId: number
+  }
+  "Edit Review": {
+    movieId: number
+  }
 }
 
 const AppStack = createNativeStackNavigator<AppStackParamList>()
@@ -227,9 +235,6 @@ function RootNavigation() {
         }}
       >
         <AppStack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
           initialRouteName={
             isAuthenticated ? "Authenticated Tabs" : "Onboarding Screens"
           }
@@ -237,10 +242,36 @@ function RootNavigation() {
           <AppStack.Screen
             name="Onboarding Screens"
             component={OnboardingScreens}
+            options={{
+              headerShown: false,
+            }}
           />
           <AppStack.Screen
             name="Authenticated Tabs"
             component={AuthenticatedTabs}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <AppStack.Screen
+            name="Create Review"
+            component={CreateReviewScreen}
+            options={{
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
+          <AppStack.Screen
+            name="Edit Review"
+            component={EditReviewScreen}
+            options={{
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
           />
         </AppStack.Navigator>
       </NavigationContainer>

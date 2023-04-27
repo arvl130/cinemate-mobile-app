@@ -1,9 +1,26 @@
 import { LinearGradient } from "expo-linear-gradient"
-import { Dimensions, Image, ScrollView, Text, View } from "react-native"
-import { getMovieDetails } from "../../utils/api"
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
+import {
+  getMovieDetails,
+  getMovieReviews,
+  getUserProfile,
+} from "../../utils/api"
 import type { MovieDetails } from "tmdb-ts"
 import { useQuery } from "@tanstack/react-query"
 import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
+import { Review } from "../../types/review"
+import { useNavigation } from "@react-navigation/native"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { IsAuthenticatedView } from "../../components/is-authenticated"
+import { Entypo } from "@expo/vector-icons"
+import { MaterialCommunityIcons } from "@expo/vector-icons"
 
 const { height } = Dimensions.get("window")
 
@@ -52,17 +69,208 @@ function ShortInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   )
 }
 
-function LongInfo({ movieDetails }: { movieDetails: MovieDetails }) {
+function OverviewSection({ overview }: { overview: string }) {
   return (
     <View>
       <Text className="text-white font-semibold text-base">Overview</Text>
-      <Text className="text-white">{movieDetails.overview}</Text>
-      <Text className="text-white font-semibold text-base mt-3">
-        Ratings & Reviews
-      </Text>
-      <Text className="text-white">
-        Ratings and reviews are from people who have watched the movie.
-      </Text>
+      <Text className="text-white">{overview}</Text>
+    </View>
+  )
+}
+
+function ReviewSectionItem({
+  review,
+  currentUserId,
+}: {
+  review: Review
+  currentUserId?: string
+}) {
+  const { isLoading, isError, data, refetch } = useQuery({
+    queryKey: ["userProfile", review.userId],
+    queryFn: () => getUserProfile(review.userId),
+  })
+  useRefreshOnFocus(refetch)
+
+  function formattedDate(dateStr: string) {
+    const date = new Date(dateStr)
+    const monthInt = date.getMonth() + 1
+    const month = monthInt > 9 ? `${monthInt}` : `0${monthInt}`
+    const dayInt = date.getDate()
+    const day = dayInt > 9 ? `${dayInt}` : `0${dayInt}`
+    return `${month}/${day}/${date.getFullYear()}`
+  }
+
+  const navigation = useNavigation<
+    NativeStackNavigationProp<{
+      "Edit Review": {
+        movieId: number
+      }
+    }>
+  >()
+
+  return (
+    <View>
+      <View className="flex-row gap-3 items-center mb-3">
+        <View className="w-12 h-12 rounded-full bg-gray-300"></View>
+        <View className="flex-1">
+          <View>
+            <>
+              {isLoading ? (
+                <Text className="text-white">...</Text>
+              ) : (
+                <>
+                  {isError ? (
+                    <Text className="text-red-500">Error</Text>
+                  ) : (
+                    <Text className="text-white">{data.displayName}</Text>
+                  )}
+                </>
+              )}
+            </>
+          </View>
+          <View className="flex-row gap-3">
+            <View className="flex-row">
+              {[...Array(review.rating)].map((value) => (
+                <Text key={value}>
+                  <Entypo name="star" size={16} color={"#facc15"} />
+                </Text>
+              ))}
+            </View>
+            <Text className="text-white">
+              {formattedDate(review.createdAt)}
+            </Text>
+          </View>
+        </View>
+        <>
+          {review.userId === currentUserId && (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.push("Edit Review", {
+                  movieId: review.movieId,
+                })
+              }}
+            >
+              <MaterialCommunityIcons name="pencil" size={24} color="white" />
+            </TouchableOpacity>
+          )}
+        </>
+      </View>
+      <View>
+        <Text className="text-white">{review.details}</Text>
+      </View>
+    </View>
+  )
+}
+
+function YourOwnReview({
+  userId,
+  reviews,
+  goToCreateReview,
+}: {
+  userId: string
+  reviews: Review[]
+  goToCreateReview: () => void
+}) {
+  const yourReview = reviews.find((review) => review.userId === userId)
+  if (yourReview === undefined)
+    return (
+      <>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          className="[background-color:_#FE6007] rounded-md"
+          onPress={goToCreateReview}
+        >
+          <Text className="text-white text-center py-3 font-medium">
+            Leave a review
+          </Text>
+        </TouchableOpacity>
+      </>
+    )
+
+  return <ReviewSectionItem review={yourReview} currentUserId={userId} />
+}
+
+function ReviewSection({ movieId }: { movieId: number }) {
+  const { isLoading, isError, data, refetch } = useQuery({
+    queryKey: ["movieReviews", movieId],
+    queryFn: () => getMovieReviews(movieId),
+  })
+  useRefreshOnFocus(refetch)
+
+  const navigation = useNavigation<
+    NativeStackNavigationProp<{
+      "Create Review": {
+        movieId: number
+      }
+    }>
+  >()
+
+  return (
+    <IsAuthenticatedView>
+      {(user) => {
+        return (
+          <>
+            <Text className="text-white font-semibold text-base mt-3">
+              Ratings & Reviews
+            </Text>
+            <Text className="text-white py-3">
+              Ratings and reviews are from people who have watched the movie.
+            </Text>
+            {/* Reviews by users */}
+            {isLoading ? (
+              <Text className="text-white text-center">Loading ...</Text>
+            ) : (
+              <>
+                {isError ? (
+                  <Text className="text-white text-center">
+                    An error occured while fetching movie reviews. :{"("}
+                  </Text>
+                ) : (
+                  <>
+                    <YourOwnReview
+                      userId={user.uid}
+                      reviews={data}
+                      goToCreateReview={() => {
+                        navigation.navigate("Create Review", {
+                          movieId,
+                        })
+                      }}
+                    />
+                    {data.length === 0 ? (
+                      <Text className="text-white text-center py-3">
+                        No reviews yet.
+                      </Text>
+                    ) : (
+                      <>
+                        {/* TODO: Stars section */}
+                        {data
+                          .filter((review) => review.userId !== user.uid)
+                          .map((review) => (
+                            <View className="mt-3">
+                              <ReviewSectionItem
+                                key={review.userId}
+                                review={review}
+                              />
+                            </View>
+                          ))}
+                      </>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </>
+        )
+      }}
+    </IsAuthenticatedView>
+  )
+}
+
+function LongInfo({ movieDetails }: { movieDetails: MovieDetails }) {
+  return (
+    <View>
+      <OverviewSection overview={movieDetails.overview} />
+      <ReviewSection movieId={movieDetails.id} />
     </View>
   )
 }
