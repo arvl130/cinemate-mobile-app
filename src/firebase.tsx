@@ -8,24 +8,17 @@ import {
   initializeAuth,
 } from "firebase/auth/react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { View } from "react-native"
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: "",
-}
+import Constants from "expo-constants"
 
 export let app: FirebaseApp
 export let auth: Auth
 
 // Initialize Firebase
 if (getApps().length === 0) {
-  app = initializeApp(firebaseConfig)
+  if (!Constants.expoConfig?.extra?.firebaseConfig)
+    throw new Error("No Firebase config found")
+
+  app = initializeApp(Constants.expoConfig.extra.firebaseConfig)
   auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage),
   })

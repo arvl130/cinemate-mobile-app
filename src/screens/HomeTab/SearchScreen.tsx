@@ -12,6 +12,7 @@ import {
 import { useState } from "react"
 import type { MovieListEntry } from "../../types/Movie"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import Constants from "expo-constants"
 
 function SearchResult({ movie }: { movie: MovieListEntry }) {
   const navigation = useNavigation<
@@ -254,8 +255,12 @@ export function SearchScreen({ route }: any) {
     try {
       setIsLoading(true)
       setHasSearched(true)
-      const apiKey = ""
-      const link = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=en-US&query=${searchQuery}&page=1&include_adult=false`
+
+      if (typeof Constants.expoConfig?.extra?.tmdbApiKey !== "string")
+        throw new Error("No TMDB API key found")
+
+      const { tmdbApiKey } = Constants.expoConfig.extra
+      const link = `https://api.themoviedb.org/3/search/movie?api_key=${tmdbApiKey}&language=en-US&query=${searchQuery}&page=1&include_adult=false`
       const response = await fetch(link)
       const { results } = await response.json()
       setSearchResults(results)

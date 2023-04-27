@@ -2,6 +2,7 @@ import { LinearGradient } from "expo-linear-gradient"
 import { Dimensions, Image, ScrollView, Text, View } from "react-native"
 import { useEffect, useState } from "react"
 import { GetMovieResult } from "../../types/Movie"
+import Constants from "expo-constants"
 
 const { height } = Dimensions.get("window")
 
@@ -70,9 +71,12 @@ export function MovieDetailsScreen({ route }: any) {
   const [movie, setMovie] = useState<GetMovieResult | null>(null)
 
   async function getMovie(movieId: string) {
-    const apiKey = ""
+    if (typeof Constants.expoConfig?.extra?.tmdbApiKey !== "string")
+      throw new Error("No TMDB API key found")
+
+    const { tmdbApiKey } = Constants.expoConfig.extra
     const response = await fetch(
-      `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&language=en-US`
+      `https://api.themoviedb.org/3/movie/${movieId}?api_key=${tmdbApiKey}&language=en-US`
     )
     const movie = await response.json()
     setMovie(movie)
