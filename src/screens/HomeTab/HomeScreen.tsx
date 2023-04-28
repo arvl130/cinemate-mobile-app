@@ -11,16 +11,11 @@ import type { ViewToken } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { useRef, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MovieListEntry } from "../../types/Movie"
+import { AppStackProp } from "../../types/routes"
 
 function SearchSection() {
-  const navigation = useNavigation<
-    NativeStackNavigationProp<{
-      Home: undefined
-      Search: undefined
-    }>
-  >()
+  const navigation = useNavigation<AppStackProp>()
 
   return (
     <>
@@ -42,7 +37,7 @@ function SearchSection() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
-            navigation.navigate("Search")
+            navigation.navigate("Search Movies")
           }}
         >
           <LinearGradient
@@ -115,20 +110,14 @@ const NEW_RELEASE_DATA: Array<MovieListEntry> = [
 ]
 
 function NewReleaseSectionItem({ movie }: { movie: MovieListEntry }) {
-  const navigation = useNavigation<
-    NativeStackNavigationProp<{
-      "Movie Details": {
-        id: number
-      }
-    }>
-  >()
+  const navigation = useNavigation<AppStackProp>()
 
   return (
     <TouchableOpacity
       activeOpacity={0.6}
       onPress={() => {
         navigation.navigate("Movie Details", {
-          id: movie.id,
+          movieId: movie.id,
         })
       }}
     >
@@ -325,19 +314,13 @@ const MOVIES_TVSHOWS_POPULAR_DATA = [
 ]
 
 function ForYouSectionItem({ movie }: { movie: MovieListEntry }) {
-  const navigation = useNavigation<
-    NativeStackNavigationProp<{
-      "Movie Details": {
-        id: number
-      }
-    }>
-  >()
+  const navigation = useNavigation<AppStackProp>()
 
   return (
     <TouchableOpacity
       onPress={() => {
         navigation.navigate("Movie Details", {
-          id: movie.id,
+          movieId: movie.id,
         })
       }}
       activeOpacity={0.6}

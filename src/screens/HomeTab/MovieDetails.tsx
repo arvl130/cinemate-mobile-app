@@ -304,10 +304,10 @@ function LongInfo({ movieDetails }: { movieDetails: MovieDetails }) {
 }
 
 export function MovieDetailsScreen({ route }: any) {
-  const { id } = route.params
+  const { movieId } = route.params
   const { isLoading, isError, data, refetch } = useQuery({
-    queryKey: ["movieDetails", id],
-    queryFn: () => getMovieDetails(id),
+    queryKey: ["movieDetails", movieId],
+    queryFn: () => getMovieDetails(movieId),
   })
 
   useRefreshOnFocus(refetch)

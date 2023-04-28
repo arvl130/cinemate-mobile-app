@@ -29,8 +29,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { CreateReviewScreen } from "./src/screens/HomeTab/CreateReview"
 import { EditReviewScreen } from "./src/screens/HomeTab/EditReview"
 import { SearchFriendsScreen } from "./src/screens/FriendsTab/SearchFriendsScreen"
-import { Text, TextInput, TouchableOpacity, View } from "react-native"
-import { LinearGradient } from "expo-linear-gradient"
+import { AppStackRoutes } from "./src/types/routes"
+import { FriendProfileScreen } from "./src/screens/FriendsTab/FriendProfile"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -39,19 +39,7 @@ const SchedulesStack = createNativeStackNavigator()
 const AccountStack = createNativeStackNavigator()
 const AuthenticatedTab = createBottomTabNavigator()
 
-type AppStackParamList = {
-  "Onboarding Screens": undefined
-  "Authenticated Tabs": undefined
-  "Create Review": {
-    movieId: number
-  }
-  "Edit Review": {
-    movieId: number
-  }
-  "Search Friends": undefined
-}
-
-const AppStack = createNativeStackNavigator<AppStackParamList>()
+const AppStack = createNativeStackNavigator<AppStackRoutes>()
 
 function HomeTab() {
   return (
@@ -70,8 +58,6 @@ function HomeTab() {
           headerShown: false,
         }}
       />
-      <HomeStack.Screen name="Search" component={SearchScreen} />
-      <HomeStack.Screen name="Movie Details" component={MovieDetailsScreen} />
     </HomeStack.Navigator>
   )
 }
@@ -123,7 +109,7 @@ function AccountTab() {
 }
 
 type OnboardingScreensProps = NativeStackScreenProps<
-  AppStackParamList,
+  AppStackRoutes,
   "Onboarding Screens"
 >
 
@@ -159,7 +145,7 @@ function OnboardingScreens({ navigation }: OnboardingScreensProps) {
 }
 
 type AuthenticatedTabsProps = NativeStackScreenProps<
-  AppStackParamList,
+  AppStackRoutes,
   "Authenticated Tabs"
 >
 
@@ -257,6 +243,28 @@ function RootNavigation() {
             options={{
               animation: "slide_from_right",
               headerShown: false,
+            }}
+          />
+          <AppStack.Screen
+            name="Search Movies"
+            component={SearchScreen}
+            options={{
+              animation: "slide_from_right",
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
+          <AppStack.Screen
+            name="Movie Details"
+            component={MovieDetailsScreen}
+            options={{
+              animation: "slide_from_right",
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
             }}
           />
           <AppStack.Screen

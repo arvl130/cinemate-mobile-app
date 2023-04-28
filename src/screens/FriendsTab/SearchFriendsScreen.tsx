@@ -10,25 +10,16 @@ import {
   View,
 } from "react-native"
 import { useState } from "react"
-import type { MovieListEntry } from "../../types/Movie"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { searchMovies, searchUserProfiles } from "../../utils/api"
-import type { Movie } from "tmdb-ts"
+import { searchUserProfiles } from "../../utils/api"
 import { z } from "zod"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { UserRecord } from "../../types/user"
-import { Entypo } from "@expo/vector-icons"
+import { AppStackProp } from "../../types/routes"
 
 function SearchResult({ userRecord }: { userRecord: UserRecord }) {
-  const navigation = useNavigation<
-    NativeStackNavigationProp<{
-      "Movie Details": {
-        id: number
-      }
-    }>
-  >()
+  const navigation = useNavigation<AppStackProp>()
 
   return (
     <>
