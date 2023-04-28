@@ -14,7 +14,7 @@ if (typeof Constants.expoConfig?.extra?.tmdbAccessToken !== "string")
 const { backendBaseUrl, tmdbAccessToken } = Constants.expoConfig.extra
 const tmdb = new TMDB(tmdbAccessToken)
 
-export async function getSearchResults(query: string) {
+export async function searchMovies(query: string) {
   const response = await fetch(`${backendBaseUrl}/movie/search/${query}`)
   const { results } = await response.json()
   return results as Movie[]
@@ -133,4 +133,10 @@ export async function getMovieReview(movieId: number, userId: string) {
   const { result } = await response.json()
   if (response.status === 404) return null
   return result as Review
+}
+
+export async function searchUserProfiles(query: string) {
+  const response = await fetch(`${backendBaseUrl}/user/search/${query}`)
+  const data = await response.json()
+  return data.results as UserRecord[]
 }

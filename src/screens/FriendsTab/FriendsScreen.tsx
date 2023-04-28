@@ -11,10 +11,60 @@ import {
 } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
 import { Entypo } from "@expo/vector-icons"
+import { useQuery } from "@tanstack/react-query"
+import { getUserProfile } from "../../utils/api"
+import { useNavigation } from "@react-navigation/native"
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 
 const { height } = Dimensions.get("window")
 
+function FriendSectionItem({ friendId }: { friendId: string }) {
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ["userProfile", friendId],
+    queryFn: () => getUserProfile(friendId),
+  })
+
+  if (isLoading)
+    return (
+      <View className="px-6 py-2 flex-row justify-center items-center">
+        <Text className="text-white">Loading ...</Text>
+      </View>
+    )
+
+  if (isError)
+    return (
+      <View className="px-6 py-2 flex-row justify-center items-center">
+        <Text className="text-red-500">
+          An error occured while retrieving this user.
+        </Text>
+      </View>
+    )
+
+  return (
+    <View className="px-6 py-2 flex-row justify-between items-center">
+      <View className="flex-row items-center gap-6">
+        <Image
+          source={require("../../assets/friends/eunice.jpg")}
+          className="h-20 w-20 rounded-full"
+        ></Image>
+        <Text className="text-white">{data.displayName}</Text>
+      </View>
+      <View>
+        <TouchableOpacity activeOpacity={0.3} onPress={() => {}}>
+          <Entypo name="dots-three-vertical" size={16} color="white" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  )
+}
+
 export function FriendsScreen() {
+  const navigation = useNavigation<
+    NativeStackNavigationProp<{
+      "Search Friends": undefined
+    }>
+  >()
+
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -42,7 +92,12 @@ export function FriendsScreen() {
             </Text>
           </View>
           <View className="px-6 mb-3">
-            <TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => {
+                navigation.navigate("Search Friends")
+              }}
+            >
               <LinearGradient
                 colors={["rgba(254, 96, 7, 0.3)", "rgba(237, 185, 123, 0.3)"]}
                 locations={[0, 1]}
@@ -64,102 +119,8 @@ export function FriendsScreen() {
                 <FontAwesome name="sort-alpha-asc" size={16} color="white" />
               </Text>
             </View>
-            <View>
-              <View className="px-6 py-2 flex-row justify-between items-center">
-                <View className="flex-row items-center gap-6">
-                  <Image
-                    source={require("../../assets/friends/eunice.jpg")}
-                    className="h-20 w-20 rounded-full"
-                  ></Image>
-                  <Text className="text-white">Eunice Cuenca</Text>
-                </View>
-                <View>
-                  <TouchableOpacity activeOpacity={0.3}>
-                    <Entypo
-                      name="dots-three-vertical"
-                      size={16}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
 
-              <View className="px-6 py-2 flex-row justify-between items-center">
-                <View className="flex-row items-center gap-6">
-                  <Image
-                    source={require("../../assets/friends/cherry.jpg")}
-                    className="h-20 w-20 rounded-full"
-                  ></Image>
-                  <Text className="text-white">Cherry Lou Parinas</Text>
-                </View>
-                <View>
-                  <TouchableOpacity activeOpacity={0.3}>
-                    <Entypo
-                      name="dots-three-vertical"
-                      size={16}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View className="px-6 py-2 flex-row justify-between items-center">
-                <View className="flex-row items-center gap-6">
-                  <Image
-                    source={require("../../assets/friends/alfred.jpg")}
-                    className="h-20 w-20 rounded-full"
-                  ></Image>
-                  <Text className="text-white">Alfred Carza</Text>
-                </View>
-                <View>
-                  <TouchableOpacity activeOpacity={0.3}>
-                    <Entypo
-                      name="dots-three-vertical"
-                      size={16}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View className="px-6 py-2 flex-row justify-between items-center">
-                <View className="flex-row items-center gap-6">
-                  <Image
-                    source={require("../../assets/friends/pablo.jpg")}
-                    className="h-20 w-20 rounded-full"
-                  ></Image>
-                  <Text className="text-white">Rodrigo Pablo</Text>
-                </View>
-                <View>
-                  <TouchableOpacity activeOpacity={0.3}>
-                    <Entypo
-                      name="dots-three-vertical"
-                      size={16}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View className="px-6 py-2 flex-row justify-between items-center">
-                <View className="flex-row items-center gap-6">
-                  <Image
-                    source={require("../../assets/friends/eizen.jpg")}
-                    className="h-20 w-20 rounded-full"
-                  ></Image>
-                  <Text className="text-white">Eizen Malacapo</Text>
-                </View>
-                <View>
-                  <TouchableOpacity activeOpacity={0.3}>
-                    <Entypo
-                      name="dots-three-vertical"
-                      size={16}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
+            <View></View>
           </View>
         </ScrollView>
       </View>

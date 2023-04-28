@@ -12,7 +12,7 @@ import {
 import { useState } from "react"
 import type { MovieListEntry } from "../../types/Movie"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { getSearchResults } from "../../utils/api"
+import { searchMovies } from "../../utils/api"
 import type { Movie } from "tmdb-ts"
 
 function SearchResult({ movie }: { movie: MovieListEntry }) {
@@ -257,7 +257,7 @@ export function SearchScreen({ route }: any) {
       setIsLoading(true)
       setHasSearched(true)
 
-      const results = await getSearchResults(searchQuery)
+      const results = await searchMovies(searchQuery)
 
       setSearchResults(results)
       setIsError(false)

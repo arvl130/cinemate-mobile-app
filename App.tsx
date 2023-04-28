@@ -28,6 +28,9 @@ import { ForgotPasswordScreen } from "./src/screens/ForgotPasswordScreen"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { CreateReviewScreen } from "./src/screens/HomeTab/CreateReview"
 import { EditReviewScreen } from "./src/screens/HomeTab/EditReview"
+import { SearchFriendsScreen } from "./src/screens/FriendsTab/SearchFriendsScreen"
+import { Text, TextInput, TouchableOpacity, View } from "react-native"
+import { LinearGradient } from "expo-linear-gradient"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -45,6 +48,7 @@ type AppStackParamList = {
   "Edit Review": {
     movieId: number
   }
+  "Search Friends": undefined
 }
 
 const AppStack = createNativeStackNavigator<AppStackParamList>()
@@ -269,6 +273,17 @@ function RootNavigation() {
           <AppStack.Screen
             name="Edit Review"
             component={EditReviewScreen}
+            options={{
+              animation: "slide_from_right",
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
+          <AppStack.Screen
+            name="Search Friends"
+            component={SearchFriendsScreen}
             options={{
               animation: "slide_from_right",
               headerStyle: {
