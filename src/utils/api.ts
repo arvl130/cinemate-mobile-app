@@ -202,6 +202,12 @@ export async function getSavedMovies(userId: string) {
   return results as SavedMovie[]
 }
 
+export async function getReviewedMovies(userId: string) {
+  const response = await fetch(`${backendBaseUrl}/user/${userId}/reviewed`)
+  const { results } = await response.json()
+  return results as Review[]
+}
+
 export async function getWatchedMovies(userId: string) {
   const response = await fetch(`${backendBaseUrl}/user/${userId}/watched`)
   const { results } = await response.json()
@@ -243,8 +249,8 @@ export async function removeWatchedMovie(userId: string, movieId: number) {
 
 export async function getWatchlistMovies(userId: string) {
   const response = await fetch(`${backendBaseUrl}/user/${userId}/watchlist`)
-  const { result } = await response.json()
-  return result as WatchlistMovie[]
+  const { results } = await response.json()
+  return results as WatchlistMovie[]
 }
 
 export async function addWatchlistMovie(userId: string, movieId: number) {

@@ -10,17 +10,21 @@ import {
 import {
   addFriend,
   getMovieDetails,
+  getReviewedMovies,
   getUserProfile,
   getWatchedMovies,
+  getWatchlistMovies,
   removeFriend,
 } from "../../utils/api"
-import { Text } from "react-native"
-import { Image } from "react-native"
+import { Text, Image } from "react-native"
+import Modal from "react-native-modal"
 import { ReactNode, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
 import { AppStackProp } from "../../types/routes"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
 import { getFriends } from "../../utils/api"
+import { Review } from "../../types/review"
+import { Entypo, Ionicons } from "@expo/vector-icons"
 
 const { height } = Dimensions.get("window")
 
@@ -96,10 +100,175 @@ function WatchedTab({ friendId }: { friendId: string }) {
 }
 
 function WatchlistTab({ friendId }: { friendId: string }) {
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ["getWatchlistMovies", friendId],
+    queryFn: () => getWatchlistMovies(friendId),
+  })
+
+  if (isLoading)
+    return <Text className="text-white text-center">Loading ...</Text>
+
+  if (isError)
+    return (
+      <Text className="text-white text-center">
+        An error occured while retrieving watchlist movies :{"("}
+      </Text>
+    )
+
+  if (data.length === 0)
+    return (
+      <View>
+        <Text className="text-white text-center">No watchlist movies yet.</Text>
+      </View>
+    )
+
   return (
-    <ScrollView>
-      <Text className="text-white">Watchlist Tab</Text>
-    </ScrollView>
+    <FlatList
+      data={data}
+      renderItem={({ item }) => <MovieItem movieId={item.movieId} />}
+      numColumns={3}
+      keyExtractor={(item, index) => index.toString()}
+    />
+  )
+}
+
+function ReviewItem({ review }: { review: Review }) {
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ["movieDetails", review.movieId],
+    queryFn: () => getMovieDetails(review.movieId),
+  })
+  const [isReviewModalVisible, setIsReviewModalVisible] = useState(false)
+
+  function formattedDate(dateStr: string) {
+    const date = new Date(dateStr)
+    const monthInt = date.getMonth() + 1
+    const month = monthInt > 9 ? `${monthInt}` : `0${monthInt}`
+    const dayInt = date.getDate()
+    const day = dayInt > 9 ? `${dayInt}` : `0${dayInt}`
+    return `${month}/${day}/${date.getFullYear()}`
+  }
+
+  if (isLoading) return <Text className="text-white text-center">...</Text>
+  if (isError) return <Text className="text-red-500 text-center">Error</Text>
+
+  return (
+    <View
+      style={{
+        flex: 1 / 3,
+        marginHorizontal: 4,
+        marginBottom: 8,
+      }}
+    >
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={() => setIsReviewModalVisible(true)}
+      >
+        <Image
+          className="h-32 rounded-2xl"
+          source={{
+            uri: `https://image.tmdb.org/t/p/original/${data.poster_path}`,
+          }}
+        />
+      </TouchableOpacity>
+      <Modal
+        isVisible={isReviewModalVisible}
+        onBackButtonPress={() => setIsReviewModalVisible(false)}
+        onBackdropPress={() => setIsReviewModalVisible(false)}
+      >
+        <View className="[background-color:_#2b2b2b] h-96 w-72 mx-auto px-6 pt-3 pb-5 rounded-2xl">
+          <View className="flex-row  items-center gap-1 mb-2">
+            <TouchableOpacity onPress={() => setIsReviewModalVisible(false)}>
+              <Ionicons name="arrow-back-outline" size={24} color="white" />
+            </TouchableOpacity>
+            <Text className="text-white font-semibold text-lg pb-1">
+              Review
+            </Text>
+          </View>
+          <View className="flex-1">
+            <View className="flex-row">
+              <Image
+                className="h-32 w-24 rounded-2xl "
+                source={{
+                  uri: `https://image.tmdb.org/t/p/original/${data.poster_path}`,
+                }}
+              />
+              <View className="flex-1 pl-3">
+                <Text className="text-white font-medium mb-1">
+                  {data.title}
+                </Text>
+                <View className="mb-1">
+                  <Text className="text-gray-400 text-xs">
+                    {new Date(data.release_date).getFullYear()}
+                    {" • "}
+                    {data.original_language.toUpperCase()}
+                    {" • "}
+                    {data.runtime} min
+                  </Text>
+                </View>
+                <View className="flex-row flex-wrap gap-2">
+                  {data.genres.map((genre) => (
+                    <Text
+                      key={genre.id}
+                      className="bg-gray-500 rounded-full text-white text-xs px-2 py-1"
+                    >
+                      {genre.name}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+            </View>
+            <View className="flex-row justify-between gap-1 mt-1">
+              <View className="flex-row">
+                {[...Array(review.rating)].map((value, index) => (
+                  <Text key={index}>
+                    <Entypo name="star" size={16} color={"#facc15"} />
+                  </Text>
+                ))}
+              </View>
+              <Text className="text-white">
+                {formattedDate(review.createdAt)}
+              </Text>
+            </View>
+            <View className="flex-1 flex-row [background-color:_#D9D9D9] mt-3 px-3 py-2 rounded-2xl">
+              <Text className="[color:_#6F6969] italic">{review.details}</Text>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  )
+}
+
+function ReviewedTab({ friendId }: { friendId: string }) {
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ["getReviewedMovies", friendId],
+    queryFn: () => getReviewedMovies(friendId),
+  })
+
+  if (isLoading)
+    return <Text className="text-white text-center">Loading ...</Text>
+
+  if (isError)
+    return (
+      <Text className="text-white text-center">
+        An error occured while retrieving reviewed movies :{"("}
+      </Text>
+    )
+
+  if (data.length === 0)
+    return (
+      <View>
+        <Text className="text-white text-center">No reviewed movies yet.</Text>
+      </View>
+    )
+
+  return (
+    <FlatList
+      data={data}
+      renderItem={({ item }) => <ReviewItem review={item} />}
+      numColumns={3}
+      keyExtractor={(item, index) => index.toString()}
+    />
   )
 }
 
@@ -107,14 +276,6 @@ function ScheduledTab({ friendId }: { friendId: string }) {
   return (
     <ScrollView>
       <Text className="text-white">Scheduled Tab</Text>
-    </ScrollView>
-  )
-}
-
-function ReviewedTab({ friendId }: { friendId: string }) {
-  return (
-    <ScrollView>
-      <Text className="text-white">Reviewed Tab</Text>
     </ScrollView>
   )
 }
