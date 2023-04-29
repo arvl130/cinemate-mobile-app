@@ -14,6 +14,9 @@ export type AppStackRoutes = {
     movieId: number
   }
   "Search Friends": undefined
+  "Friend Profile": {
+    friendId: string
+  }
 }
 
 export type AppStackProp = NativeStackNavigationProp<AppStackRoutes>

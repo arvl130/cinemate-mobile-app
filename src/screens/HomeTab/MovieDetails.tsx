@@ -8,12 +8,18 @@ import {
   View,
 } from "react-native"
 import {
+  addWatchedMovie,
+  addWatchlistMovie,
   getMovieDetails,
   getMovieReviews,
+  getSavedMovies,
   getUserProfile,
+  getWatchedMovies,
+  removeWatchedMovie,
+  removeWatchlistMovie,
 } from "../../utils/api"
 import type { MovieDetails } from "tmdb-ts"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
 import { Review } from "../../types/review"
 import { useNavigation } from "@react-navigation/native"
@@ -69,17 +75,77 @@ function ShortInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   )
 }
 
-function OverviewSection({ overview }: { overview: string }) {
-  return (
-    <View>
-      <Text className="text-white font-semibold text-base">Overview</Text>
-      <Text className="text-white py-3">{overview}</Text>
+function SaveButtons({ userId, movieId }: { userId: string; movieId: number }) {
+  const { isLoading, isError, data, refetch } = useQuery({
+    queryKey: ["savedMovies", userId],
+    queryFn: () => getSavedMovies(userId),
+  })
+
+  const { refetch: refetchWatchedMovies } = useQuery({
+    queryKey: ["getWatchedMovies", userId],
+    queryFn: () => getWatchedMovies(userId),
+  })
+
+  const { mutate: doAddWatchedMovie } = useMutation({
+    mutationKey: ["addWatchedMovie", userId, movieId],
+    mutationFn: (values: { userId: string; movieId: number }) =>
+      addWatchedMovie(values.userId, values.movieId),
+    onSuccess: () => {
+      refetch()
+      refetchWatchedMovies()
+    },
+  })
+  const { mutate: doRemoveWatchedMovie } = useMutation({
+    mutationKey: ["removeWatchedMovie", userId, movieId],
+    mutationFn: (values: { userId: string; movieId: number }) =>
+      removeWatchedMovie(values.userId, values.movieId),
+    onSuccess: () => {
+      refetch()
+      refetchWatchedMovies()
+    },
+  })
+
+  const { mutate: doAddWatchlistMovie } = useMutation({
+    mutationKey: ["addWatchlistMovie", userId, movieId],
+    mutationFn: (values: { userId: string; movieId: number }) =>
+      addWatchlistMovie(values.userId, values.movieId),
+    onSuccess: () => refetch(),
+  })
+  const { mutate: doRemoveWatchlistMovie } = useMutation({
+    mutationKey: ["removeWatchlistMovie", userId, movieId],
+    mutationFn: (values: { userId: string; movieId: number }) =>
+      removeWatchlistMovie(values.userId, values.movieId),
+    onSuccess: () => refetch(),
+  })
+
+  if (isLoading)
+    return (
+      <View>
+        <Text className="text-center text-white">Loading ...</Text>
+      </View>
+    )
+
+  if (isError)
+    return (
+      <View>
+        <Text className="text-center text-white">
+          An error occured while retrieving status of this movie.
+        </Text>
+      </View>
+    )
+
+  const savedMovieFound = data.find(
+    (savedMovie) => savedMovie.movieId === movieId
+  )
+
+  if (!savedMovieFound)
+    return (
       <View className="flex-row flex-2 gap-3">
         <View className="flex-1">
           <TouchableOpacity
             activeOpacity={0.6}
             className="border-2 [border-color:_#FE6007] [background-color:_#FE6007] rounded-md"
-            onPress={() => {}}
+            onPress={() => doAddWatchedMovie({ userId, movieId })}
           >
             <Text className="text-white text-center py-3 font-medium">
               Watched Already
@@ -90,7 +156,7 @@ function OverviewSection({ overview }: { overview: string }) {
           <TouchableOpacity
             activeOpacity={0.6}
             className="border-2 [border-color:_#FE6007] rounded-md"
-            onPress={() => {}}
+            onPress={() => doAddWatchlistMovie({ userId, movieId })}
           >
             <Text className="[color:_#FE6007] text-center py-3 font-medium">
               Add to Watchlist
@@ -98,13 +164,64 @@ function OverviewSection({ overview }: { overview: string }) {
           </TouchableOpacity>
         </View>
       </View>
+    )
+
+  if (savedMovieFound.watchStatus === "Watched")
+    return (
       <TouchableOpacity
-        activeOpacity={0.8}
-        className="border-2 bg-gray-100 rounded-md mt-3"
-        onPress={() => {}}
+        activeOpacity={0.6}
+        className="border-2 border-red-500 bg-red-500 rounded-md"
+        onPress={() => doRemoveWatchedMovie({ userId, movieId })}
       >
-        <Text className="text-center py-3 font-medium">Schedule</Text>
+        <Text className="text-white text-center py-3 font-medium">
+          Remove from Watched
+        </Text>
       </TouchableOpacity>
+    )
+
+  if (savedMovieFound.watchStatus === "WatchList")
+    return (
+      <>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          className="border-2 bg-gray-100 rounded-md"
+          onPress={() => {}}
+        >
+          <Text className="text-center py-3 font-medium">Schedule</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.6}
+          className="border-2 border-red-500 bg-red-500 rounded-md mt-3"
+          onPress={() => doRemoveWatchlistMovie({ userId, movieId })}
+        >
+          <Text className="text-white text-center py-3 font-medium">
+            Remove from Watchlist
+          </Text>
+        </TouchableOpacity>
+      </>
+    )
+
+  return (
+    <Text className="text-red-500">
+      {savedMovieFound.watchStatus} Should not reach here
+    </Text>
+  )
+}
+
+function OverviewSection({
+  overview,
+  movieId,
+}: {
+  overview: string
+  movieId: number
+}) {
+  return (
+    <View>
+      <Text className="text-white font-semibold text-base">Overview</Text>
+      <Text className="text-white py-3">{overview}</Text>
+      <IsAuthenticatedView>
+        {(user) => <SaveButtons movieId={movieId} userId={user.uid} />}
+      </IsAuthenticatedView>
     </View>
   )
 }
@@ -161,8 +278,8 @@ function ReviewSectionItem({
           </View>
           <View className="flex-row gap-3">
             <View className="flex-row">
-              {[...Array(review.rating)].map((value) => (
-                <Text key={value}>
+              {[...Array(review.rating)].map((value, index) => (
+                <Text key={index}>
                   <Entypo name="star" size={16} color={"#facc15"} />
                 </Text>
               ))}
@@ -193,19 +310,38 @@ function ReviewSectionItem({
   )
 }
 
-function YourOwnReview({
+function ReviewSectionOwnReview({
   userId,
+  movieId,
   reviews,
   goToCreateReview,
 }: {
   userId: string
+  movieId: number
   reviews: Review[]
   goToCreateReview: () => void
 }) {
-  const yourReview = reviews.find((review) => review.userId === userId)
-  if (yourReview === undefined)
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ["getWatchedMovies", userId],
+    queryFn: () => getWatchedMovies(userId),
+  })
+
+  if (isLoading) return <></>
+  if (isError)
     return (
-      <>
+      <Text className="text-center text-red-500">
+        An error occured while retrieving watched movies.
+      </Text>
+    )
+
+  const yourReview = reviews.find((review) => review.userId === userId)
+  if (yourReview === undefined) {
+    const isAWatchedMovie = data.some(
+      (watchedMovie) => watchedMovie.movieId === movieId
+    )
+
+    if (isAWatchedMovie) {
+      return (
         <TouchableOpacity
           activeOpacity={0.8}
           className="[background-color:_#FE6007] rounded-md"
@@ -215,10 +351,46 @@ function YourOwnReview({
             Leave a review
           </Text>
         </TouchableOpacity>
-      </>
-    )
+      )
+    } else {
+      return <></>
+    }
+  }
 
-  return <ReviewSectionItem review={yourReview} currentUserId={userId} />
+  return (
+    <ReviewSectionItem
+      key={userId}
+      review={yourReview}
+      currentUserId={userId}
+    />
+  )
+}
+
+function ReviewSectionOtherReviews({
+  reviews,
+  userId,
+}: {
+  reviews: Review[]
+  userId: string
+}) {
+  return (
+    <>
+      {reviews.length === 0 ? (
+        <Text className="text-white text-center py-3">No reviews yet.</Text>
+      ) : (
+        <>
+          {/* TODO: Stars section */}
+          {reviews
+            .filter((review) => review.userId !== userId)
+            .map((review) => (
+              <View key={review.userId} className="mt-3">
+                <ReviewSectionItem review={review} />
+              </View>
+            ))}
+        </>
+      )}
+    </>
+  )
 }
 
 function ReviewSection({ movieId }: { movieId: number }) {
@@ -237,67 +409,60 @@ function ReviewSection({ movieId }: { movieId: number }) {
   >()
 
   return (
-    <IsAuthenticatedView>
-      {(user) => {
-        return (
-          <>
-            <Text className="text-white font-semibold text-base mt-3">
-              Ratings & Reviews
-            </Text>
-            <Text className="text-white py-3">
-              Ratings and reviews are from people who have watched the movie.
-            </Text>
-            {/* Reviews by users */}
-            {isLoading ? (
-              <Text className="text-white text-center">Loading ...</Text>
-            ) : (
-              <>
-                {isError ? (
-                  <Text className="text-white text-center">
-                    An error occured while fetching movie reviews. :{"("}
-                  </Text>
-                ) : (
-                  <>
-                    <YourOwnReview
-                      userId={user.uid}
-                      reviews={data}
-                      goToCreateReview={() => {
-                        navigation.navigate("Create Review", {
-                          movieId,
-                        })
-                      }}
-                    />
-                    {data.length === 0 ? (
-                      <Text className="text-white text-center py-3">
-                        No reviews yet.
-                      </Text>
-                    ) : (
-                      <>
-                        {/* TODO: Stars section */}
-                        {data
-                          .filter((review) => review.userId !== user.uid)
-                          .map((review) => (
-                            <View key={review.userId} className="mt-3">
-                              <ReviewSectionItem review={review} />
-                            </View>
-                          ))}
-                      </>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-          </>
-        )
-      }}
-    </IsAuthenticatedView>
+    <>
+      <Text className="text-white font-semibold text-base mt-3">
+        Ratings & Reviews
+      </Text>
+      <Text className="text-white py-3">
+        Ratings and reviews are from people who have watched the movie.
+      </Text>
+      <IsAuthenticatedView>
+        {(user) => {
+          return (
+            <>
+              {isLoading ? (
+                <Text className="text-white text-center">Loading ...</Text>
+              ) : (
+                <>
+                  {isError ? (
+                    <Text className="text-white text-center">
+                      An error occured while fetching movie reviews. :{"("}
+                    </Text>
+                  ) : (
+                    <>
+                      <ReviewSectionOwnReview
+                        userId={user.uid}
+                        movieId={movieId}
+                        reviews={data}
+                        goToCreateReview={() => {
+                          navigation.navigate("Create Review", {
+                            movieId,
+                          })
+                        }}
+                      />
+                      <ReviewSectionOtherReviews
+                        userId={user.uid}
+                        reviews={data}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+            </>
+          )
+        }}
+      </IsAuthenticatedView>
+    </>
   )
 }
 
 function LongInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   return (
     <View>
-      <OverviewSection overview={movieDetails.overview} />
+      <OverviewSection
+        movieId={movieDetails.id}
+        overview={movieDetails.overview}
+      />
       <ReviewSection movieId={movieDetails.id} />
     </View>
   )

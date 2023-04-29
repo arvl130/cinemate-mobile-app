@@ -300,6 +300,17 @@ function RootNavigation() {
               headerTintColor: "white",
             }}
           />
+          <AppStack.Screen
+            name="Friend Profile"
+            component={FriendProfileScreen}
+            options={{
+              animation: "slide_from_right",
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
         </AppStack.Navigator>
       </NavigationContainer>
     </>

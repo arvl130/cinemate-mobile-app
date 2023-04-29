@@ -26,7 +26,11 @@ function SearchResult({ userRecord }: { userRecord: UserRecord }) {
       <TouchableOpacity
         activeOpacity={0.8}
         className="[background-color:_#353535] h-24 flex-row mb-2 px-3"
-        onPress={() => {}}
+        onPress={() =>
+          navigation.push("Friend Profile", {
+            friendId: userRecord.uid,
+          })
+        }
       >
         <View className="flex-row flex-1 gap-x-6 items-center">
           <View className="w-20 h-20">

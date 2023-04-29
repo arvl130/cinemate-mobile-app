@@ -25,3 +25,8 @@ export declare class UserRecord {
   tenantId?: string | null
   tokensValidAfterTime?: string
 }
+
+export type Friend = {
+  userId: string
+  friendId: string
+}

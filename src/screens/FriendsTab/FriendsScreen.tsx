@@ -12,13 +12,14 @@ import {
 import { FontAwesome } from "@expo/vector-icons"
 import { Entypo } from "@expo/vector-icons"
 import { useQuery } from "@tanstack/react-query"
-import { getUserProfile } from "../../utils/api"
+import { getFriends, getUserProfile } from "../../utils/api"
 import { useNavigation } from "@react-navigation/native"
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { AppStackProp } from "../../types/routes"
+import { IsAuthenticatedView } from "../../components/is-authenticated"
 
 const { height } = Dimensions.get("window")
 
-function FriendSectionItem({ friendId }: { friendId: string }) {
+function FriendsSectionItem({ friendId }: { friendId: string }) {
   const { isLoading, isError, data } = useQuery({
     queryKey: ["userProfile", friendId],
     queryFn: () => getUserProfile(friendId),
@@ -43,10 +44,21 @@ function FriendSectionItem({ friendId }: { friendId: string }) {
   return (
     <View className="px-6 py-2 flex-row justify-between items-center">
       <View className="flex-row items-center gap-6">
-        <Image
-          source={require("../../assets/friends/eunice.jpg")}
-          className="h-20 w-20 rounded-full"
-        ></Image>
+        <View className="h-20 w-20">
+          {data.photoURL ? (
+            <Image
+              className="w-full h-full rounded-full"
+              source={{
+                uri: data.photoURL,
+              }}
+            />
+          ) : (
+            <Image
+              className="w-full h-full rounded-full"
+              source={require("../../assets/no-photo-url.jpg")}
+            />
+          )}
+        </View>
         <Text className="text-white">{data.displayName}</Text>
       </View>
       <View>
@@ -58,12 +70,43 @@ function FriendSectionItem({ friendId }: { friendId: string }) {
   )
 }
 
+function FriendsSection({ userId }: { userId: string }) {
+  const {
+    isLoading,
+    isError,
+    data: friends,
+  } = useQuery({
+    queryKey: ["getFriends", userId],
+    queryFn: () => getFriends(),
+  })
+
+  if (isLoading)
+    return (
+      <View>
+        <Text className="text-white text-center">Loading ...</Text>
+      </View>
+    )
+
+  if (isError)
+    return (
+      <View>
+        <Text className="text-white text-center">
+          An error occured while retrieving friends :{"("}
+        </Text>
+      </View>
+    )
+
+  return (
+    <View>
+      {friends.map((friend) => (
+        <FriendsSectionItem key={friend.friendId} friendId={friend.friendId} />
+      ))}
+    </View>
+  )
+}
+
 export function FriendsScreen() {
-  const navigation = useNavigation<
-    NativeStackNavigationProp<{
-      "Search Friends": undefined
-    }>
-  >()
+  const navigation = useNavigation<AppStackProp>()
 
   return (
     <SafeAreaView style={styles.container}>
@@ -120,7 +163,9 @@ export function FriendsScreen() {
               </Text>
             </View>
 
-            <View></View>
+            <IsAuthenticatedView>
+              {(user) => <FriendsSection userId={user.uid} />}
+            </IsAuthenticatedView>
           </View>
         </ScrollView>
       </View>
