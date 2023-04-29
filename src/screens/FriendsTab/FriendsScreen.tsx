@@ -8,10 +8,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  Modal,
   Pressable,
-  Button,
 } from "react-native"
+import Modal from "react-native-modal"
 import { FontAwesome } from "@expo/vector-icons"
 import { Entypo } from "@expo/vector-icons"
 import { useMutation, useQuery } from "@tanstack/react-query"
@@ -92,16 +91,14 @@ function FriendsSectionItem({
         </TouchableOpacity>
       </View>
       <Modal
-        visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)}
-        animationType="fade"
-        transparent
+        isVisible={isModalVisible}
+        onBackButtonPress={() => setIsModalVisible(false)}
+        onBackdropPress={() => setIsModalVisible(false)}
+        onSwipeComplete={() => setIsModalVisible(false)}
+        swipeDirection={["down"]}
+        className="m-0 justify-end"
       >
-        <Pressable
-          className="h-1/2 bg-green"
-          onPress={() => setIsModalVisible(false)}
-        />
-        <View className="h-1/2 flex-1 [background-color:_#2B2B2B]">
+        <View className=" [background-color:_#2B2B2B] rounded-t-2xl">
           <View className="flex-row justify-center pt-4">
             <View className="bg-white h-1 rounded-full w-6"></View>
           </View>
@@ -123,7 +120,7 @@ function FriendsSectionItem({
             </View>
             <Text className="text-white">{data.displayName}</Text>
           </View>
-          <View className="px-12 py-6">
+          <View className="px-12 pt-3 pb-6">
             <TouchableOpacity
               className="py-3"
               onPress={() => {
