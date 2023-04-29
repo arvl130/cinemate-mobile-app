@@ -1,11 +1,4 @@
-import {
-  Text,
-  View,
-  TextInput,
-  Dimensions,
-  TouchableOpacity,
-} from "react-native"
-import { LinearGradient } from "expo-linear-gradient"
+import { Text, View, TextInput, TouchableOpacity } from "react-native"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"

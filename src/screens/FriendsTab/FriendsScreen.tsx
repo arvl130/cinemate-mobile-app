@@ -1,6 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient"
 import {
-  Dimensions,
   Text,
   View,
   Image,
@@ -8,7 +7,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  Pressable,
 } from "react-native"
 import Modal from "react-native-modal"
 import { FontAwesome } from "@expo/vector-icons"
@@ -19,8 +17,7 @@ import { useNavigation } from "@react-navigation/native"
 import { AppStackProp } from "../../types/routes"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
 import { useState } from "react"
-
-const { height } = Dimensions.get("window")
+import { GradientBackground } from "../../components/gradient-bg"
 
 function FriendsSectionItem({
   userId,
@@ -214,13 +211,7 @@ export function FriendsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <LinearGradient
-          colors={["#000000", "#393737"]}
-          className="absolute left-0 right-0 top-0 bottom-0"
-          style={{
-            height,
-          }}
-        />
+        <GradientBackground />
 
         <ScrollView>
           <View className="flex-row justify-center items-center gap-3 mt-3 mb-6">

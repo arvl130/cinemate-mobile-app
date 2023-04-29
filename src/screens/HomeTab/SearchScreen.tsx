@@ -1,7 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import { LinearGradient } from "expo-linear-gradient"
 import {
-  Dimensions,
   Image,
   ScrollView,
   Text,
@@ -14,6 +13,7 @@ import type { MovieListEntry } from "../../types/Movie"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { searchMovies } from "../../utils/api"
 import type { Movie } from "tmdb-ts"
+import { GradientBackground } from "../../components/gradient-bg"
 
 function SearchResult({ movie }: { movie: MovieListEntry }) {
   const navigation = useNavigation<
@@ -234,8 +234,6 @@ function SearchResultsSection({
   )
 }
 
-const { height } = Dimensions.get("window")
-
 export function SearchScreen({ route }: any) {
   const navigation = useNavigation<
     NativeStackNavigationProp<{
@@ -271,13 +269,7 @@ export function SearchScreen({ route }: any) {
 
   return (
     <View>
-      <LinearGradient
-        colors={["#000000", "#393737"]}
-        className="absolute left-0 right-0 top-0 bottom-0"
-        style={{
-          height,
-        }}
-      />
+      <GradientBackground />
 
       <ScrollView>
         <SearchSection

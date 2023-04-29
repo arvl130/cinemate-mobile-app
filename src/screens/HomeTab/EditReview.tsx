@@ -1,11 +1,4 @@
-import {
-  Text,
-  View,
-  TextInput,
-  Dimensions,
-  TouchableOpacity,
-} from "react-native"
-import { LinearGradient } from "expo-linear-gradient"
+import { Text, View, TextInput, TouchableOpacity } from "react-native"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -22,8 +15,7 @@ import { IsAuthenticatedView } from "../../components/is-authenticated"
 import { User } from "firebase/auth"
 import { useQuery } from "@tanstack/react-query"
 import { Review } from "../../types/review"
-
-const { height } = Dimensions.get("window")
+import { GradientBackground } from "../../components/gradient-bg"
 
 const formSchema = z.object({
   details: z.string().min(1),
@@ -95,13 +87,7 @@ function EditReviewForm({
 
   return (
     <View className="flex-1">
-      <LinearGradient
-        colors={["#000000", "#393737"]}
-        className="absolute left-0 right-0 top-0 bottom-0"
-        style={{
-          height,
-        }}
-      />
+      <GradientBackground />
 
       <Controller
         name="details"

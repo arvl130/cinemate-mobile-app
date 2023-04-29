@@ -1,12 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { LinearGradient } from "expo-linear-gradient"
-import {
-  Dimensions,
-  FlatList,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from "react-native"
+import { FlatList, ScrollView, TouchableOpacity, View } from "react-native"
 import {
   addFriend,
   getMovieDetails,
@@ -25,8 +18,7 @@ import { IsAuthenticatedView } from "../../components/is-authenticated"
 import { getFriends } from "../../utils/api"
 import { Review } from "../../types/review"
 import { Entypo, Ionicons } from "@expo/vector-icons"
-
-const { height } = Dimensions.get("window")
+import { GradientBackground } from "../../components/gradient-bg"
 
 function MovieItem({ movieId }: { movieId: number }) {
   const { isLoading, isError, data } = useQuery({
@@ -402,13 +394,7 @@ export function FriendProfileScreen({ route }: any) {
 
   return (
     <View className="flex-1 px-3">
-      <LinearGradient
-        colors={["#000000", "#393737"]}
-        className="absolute left-0 right-0 top-0 bottom-0"
-        style={{
-          height,
-        }}
-      />
+      <GradientBackground />
 
       <>
         {isLoading ? (

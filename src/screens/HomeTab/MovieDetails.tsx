@@ -1,12 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient"
-import {
-  Dimensions,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native"
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
 import {
   addWatchedMovie,
   addWatchlistMovie,
@@ -28,8 +21,7 @@ import { IsAuthenticatedView } from "../../components/is-authenticated"
 import { Entypo } from "@expo/vector-icons"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { AppStackProp } from "../../types/routes"
-
-const { height } = Dimensions.get("window")
+import { GradientBackground } from "../../components/gradient-bg"
 
 function ShortInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   return (
@@ -119,6 +111,8 @@ function SaveButtons({ userId, movieId }: { userId: string; movieId: number }) {
     onSuccess: () => refetch(),
   })
 
+  const navigation = useNavigation<AppStackProp>()
+
   if (isLoading)
     return (
       <View>
@@ -186,7 +180,11 @@ function SaveButtons({ userId, movieId }: { userId: string; movieId: number }) {
         <TouchableOpacity
           activeOpacity={0.8}
           className="border-2 bg-gray-100 rounded-md"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate("Create Schedule", {
+              movieId,
+            })
+          }}
         >
           <Text className="text-center py-3 font-medium">Schedule</Text>
         </TouchableOpacity>
@@ -474,13 +472,7 @@ export function MovieDetailsScreen({ route }: any) {
 
   return (
     <View>
-      <LinearGradient
-        colors={["#000000", "#393737"]}
-        className="absolute left-0 right-0 top-0 bottom-0"
-        style={{
-          height,
-        }}
-      />
+      <GradientBackground />
       {isLoading ? (
         <Text className="text-white text-center">Loading ...</Text>
       ) : (

@@ -6,13 +6,10 @@ import {
   SafeAreaView,
   Image,
   TextInput,
-  Dimensions,
 } from "react-native"
-import { LinearGradient } from "expo-linear-gradient"
 import { signOut } from "firebase/auth"
 import { auth } from "../../firebase"
-
-const { height } = Dimensions.get("window")
+import { GradientBackground } from "../../components/gradient-bg"
 
 export function AccountSettingsScreen() {
   const [isModalVisible, setisModalVisible] = useState(false)
@@ -25,15 +22,7 @@ export function AccountSettingsScreen() {
   }
   return (
     <SafeAreaView>
-      <View>
-        <LinearGradient
-          colors={["#000000", "#393737"]}
-          className="absolute left-0 right-0 top-0 bottom-0"
-          style={{
-            height,
-          }}
-        />
-      </View>
+      <GradientBackground />
 
       <View className="px-6">
         <View className="flex-row items-center justify-center">

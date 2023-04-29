@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   FlatList,
   Image,
   ScrollView,
@@ -13,6 +12,7 @@ import { useRef, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
 import { MovieListEntry } from "../../types/Movie"
 import { AppStackProp } from "../../types/routes"
+import { GradientBackground } from "../../components/gradient-bg"
 
 function SearchSection() {
   const navigation = useNavigation<AppStackProp>()
@@ -397,18 +397,10 @@ function FeaturedSection() {
   )
 }
 
-const { height } = Dimensions.get("window")
-
 export function HomeScreen() {
   return (
     <View>
-      <LinearGradient
-        colors={["#000000", "#393737"]}
-        className="absolute left-0 right-0 top-0 bottom-0"
-        style={{
-          height,
-        }}
-      />
+      <GradientBackground />
 
       <ScrollView>
         <SearchSection />
