@@ -27,6 +27,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
 import { Entypo } from "@expo/vector-icons"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
+import { AppStackProp } from "../../types/routes"
 
 const { height } = Dimensions.get("window")
 
@@ -248,18 +249,18 @@ function ReviewSectionItem({
     return `${month}/${day}/${date.getFullYear()}`
   }
 
-  const navigation = useNavigation<
-    NativeStackNavigationProp<{
-      "Edit Review": {
-        movieId: number
-      }
-    }>
-  >()
+  const navigation = useNavigation<AppStackProp>()
 
   return (
     <View>
       <View className="flex-row gap-3 items-center mb-3">
-        <View className="w-12 h-12 rounded-full bg-gray-300"></View>
+        <View className="h-12 w-12">
+          {/* TODO: Show profile picture here. */}
+          <Image
+            className="w-full h-full rounded-full"
+            source={require("../../assets/no-photo-url.jpg")}
+          />
+        </View>
         <View className="flex-1">
           <View>
             <>
@@ -357,13 +358,7 @@ function ReviewSectionOwnReview({
     }
   }
 
-  return (
-    <ReviewSectionItem
-      key={userId}
-      review={yourReview}
-      currentUserId={userId}
-    />
-  )
+  return <ReviewSectionItem review={yourReview} currentUserId={userId} />
 }
 
 function ReviewSectionOtherReviews({
