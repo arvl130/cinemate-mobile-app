@@ -14,8 +14,7 @@ import { useMutation } from "@tanstack/react-query"
 import { createMovieReview } from "../../utils/api"
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-
-const { height } = Dimensions.get("window")
+import { GradientBackground } from "../../components/gradient-bg"
 
 const formSchema = z.object({
   details: z.string().min(1),
@@ -63,13 +62,7 @@ export function CreateReviewScreen({ route }: any) {
 
   return (
     <View className="flex-1">
-      <LinearGradient
-        colors={["#000000", "#393737"]}
-        className="absolute left-0 right-0 top-0 bottom-0"
-        style={{
-          height,
-        }}
-      />
+      <GradientBackground />
 
       <Controller
         name="details"
