@@ -356,3 +356,21 @@ export async function editSchedule(values: {
     throw new Error(data.message)
   }
 }
+
+export async function deleteSchedule(values: {
+  userId: string
+  isoDate: string
+}) {
+  const response = await fetch(
+    `${backendBaseUrl}/user/${values.userId}/schedule/${values.isoDate}`,
+    {
+      method: "DELETE",
+    }
+  )
+
+  const data = await response.json()
+  if (!response.ok) {
+    if (data.error) console.log("Error cause:", data.error)
+    throw new Error(data.message)
+  }
+}

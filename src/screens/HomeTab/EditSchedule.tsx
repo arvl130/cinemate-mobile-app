@@ -4,7 +4,7 @@ import DateTimePicker from "@react-native-community/datetimepicker"
 import { useState } from "react"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import {
-  createSchedule,
+  deleteSchedule,
   editSchedule,
   getFriends,
   getSchedule,
@@ -328,6 +328,17 @@ function EditForm({
     },
   })
 
+  const { mutate: doDeleteSchedule } = useMutation({
+    mutationKey: ["deleteSchedule", userId, initialDate],
+    mutationFn: (values: { userId: string; isoDate: string }) =>
+      deleteSchedule(values),
+    onSuccess: () => {
+      navigation.navigate("Authenticated Tabs", {
+        screen: "Schedules Tab",
+      })
+    },
+  })
+
   return (
     <View className="flex-1">
       <View className="flex-1 px-3">
@@ -386,6 +397,24 @@ function EditForm({
         />
       </View>
       <View className="px-3">
+        <TouchableOpacity
+          onPress={handleSubmit(async (formData) => {
+            doDeleteSchedule({
+              userId,
+              isoDate:
+                DateTime.fromJSDate(initialDate, {
+                  zone: "Asia/Manila",
+                }).toISO() ?? "",
+            })
+          })}
+          activeOpacity={0.6}
+          className="bg-red-500 rounded-md font-medium mb-3"
+        >
+          <Text className="text-white text-center py-3 font-medium">
+            DELETE
+          </Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           onPress={handleSubmit(async (formData) => {
             doEditSchedule({
