@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { FlatList, ScrollView, TouchableOpacity, View } from "react-native"
+import { FlatList, TouchableOpacity, View } from "react-native"
 import {
   addFriend,
   getMovieDetails,
@@ -61,10 +61,11 @@ function MovieItem({ movieId }: { movieId: number }) {
 }
 
 function WatchedTab({ friendId }: { friendId: string }) {
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["watchedMovies", friendId],
     queryFn: () => getWatchedMovies(friendId),
   })
+  useRefreshOnFocus(refetch)
 
   if (isLoading)
     return <Text className="text-white text-center">Loading ...</Text>
@@ -94,10 +95,11 @@ function WatchedTab({ friendId }: { friendId: string }) {
 }
 
 function WatchlistTab({ friendId }: { friendId: string }) {
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["getWatchlistMovies", friendId],
     queryFn: () => getWatchlistMovies(friendId),
   })
+  useRefreshOnFocus(refetch)
 
   if (isLoading)
     return <Text className="text-white text-center">Loading ...</Text>
@@ -234,10 +236,11 @@ function ReviewItem({ review }: { review: Review }) {
 }
 
 function ReviewedTab({ friendId }: { friendId: string }) {
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["getReviewedMovies", friendId],
     queryFn: () => getReviewedMovies(friendId),
   })
+  useRefreshOnFocus(refetch)
 
   if (isLoading)
     return <Text className="text-white text-center">Loading ...</Text>
@@ -416,12 +419,14 @@ export function FriendProfileScreen({ route }: any) {
     isLoading,
     isError,
     data: userRecord,
+    refetch,
   } = useQuery({
     queryKey: ["userProfile", friendId],
     queryFn: () => {
       return getUserProfile(friendId)
     },
   })
+  useRefreshOnFocus(refetch)
 
   const [selectedTab, setSelectedTab] = useState<
     "WATCHED" | "WATCHLIST" | "SCHEDULED" | "REVIEWED"

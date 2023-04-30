@@ -58,10 +58,11 @@ function MovieItem({ movieId }: { movieId: number }) {
 }
 
 function WatchedTab({ friendId }: { friendId: string }) {
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["watchedMovies", friendId],
     queryFn: () => getWatchedMovies(friendId),
   })
+  useRefreshOnFocus(refetch)
 
   if (isLoading)
     return <Text className="text-white text-center">Loading ...</Text>
@@ -91,10 +92,11 @@ function WatchedTab({ friendId }: { friendId: string }) {
 }
 
 function WatchlistTab({ friendId }: { friendId: string }) {
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["getWatchlistMovies", friendId],
     queryFn: () => getWatchlistMovies(friendId),
   })
+  useRefreshOnFocus(refetch)
 
   if (isLoading)
     return <Text className="text-white text-center">Loading ...</Text>
@@ -231,10 +233,11 @@ function ReviewItem({ review }: { review: Review }) {
 }
 
 function ReviewedTab({ friendId }: { friendId: string }) {
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["getReviewedMovies", friendId],
     queryFn: () => getReviewedMovies(friendId),
   })
+  useRefreshOnFocus(refetch)
 
   if (isLoading)
     return <Text className="text-white text-center">Loading ...</Text>
@@ -389,12 +392,14 @@ export function UserLodaded({ userId }: { userId: string }) {
     isLoading,
     isError,
     data: userRecord,
+    refetch,
   } = useQuery({
     queryKey: ["userProfile", userId],
     queryFn: () => {
       return getUserProfile(userId)
     },
   })
+  useRefreshOnFocus(refetch)
 
   const [selectedTab, setSelectedTab] = useState<
     "WATCHED" | "WATCHLIST" | "SCHEDULED" | "REVIEWED"
@@ -427,7 +432,7 @@ export function UserLodaded({ userId }: { userId: string }) {
               <>
                 <View>
                   <View className="flex-row justify-center mb-3">
-                    <View className="w-20 h-20">
+                    <View className="w-24 h-24">
                       {userRecord.photoURL ? (
                         <Image
                           className="w-full h-full rounded-full"
