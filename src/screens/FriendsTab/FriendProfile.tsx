@@ -4,6 +4,7 @@ import {
   addFriend,
   getMovieDetails,
   getReviewedMovies,
+  getSchedules,
   getUserProfile,
   getWatchedMovies,
   getWatchlistMovies,
@@ -19,6 +20,7 @@ import { getFriends } from "../../utils/api"
 import { Review } from "../../types/review"
 import { Entypo, Ionicons } from "@expo/vector-icons"
 import { GradientBackground } from "../../components/gradient-bg"
+import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
 
 function MovieItem({ movieId }: { movieId: number }) {
   const { isLoading, isError, data } = useQuery({
@@ -265,10 +267,43 @@ function ReviewedTab({ friendId }: { friendId: string }) {
 }
 
 function ScheduledTab({ friendId }: { friendId: string }) {
+  const {
+    isLoading,
+    isError,
+    data: schedules,
+    refetch,
+  } = useQuery({
+    queryKey: ["getSchedules", friendId],
+    queryFn: () => getSchedules(friendId),
+  })
+  useRefreshOnFocus(refetch)
+
+  if (isLoading)
+    return <Text className="text-white text-center">Loading ...</Text>
+
+  if (isError)
+    return (
+      <Text className="text-white text-center">
+        An error occured while retrieving reviewed movies :{"("}
+      </Text>
+    )
+
+  if (schedules.length === 0)
+    return (
+      <View>
+        <Text className="text-white text-center">
+          No scheduled movies right now.
+        </Text>
+      </View>
+    )
+
   return (
-    <ScrollView>
-      <Text className="text-white">Scheduled Tab</Text>
-    </ScrollView>
+    <FlatList
+      data={schedules}
+      renderItem={({ item }) => <MovieItem movieId={item.movieId} />}
+      numColumns={3}
+      keyExtractor={(item, index) => index.toString()}
+    />
   )
 }
 
