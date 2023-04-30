@@ -63,7 +63,7 @@ function UpdatePhotoModal({
             <Ionicons name="arrow-back-outline" size={24} color="white" />
           </TouchableOpacity>
           <Text className="text-white font-semibold text-lg pb-1">
-            Change Email
+            Change Profile Picture
           </Text>
         </View>
 
