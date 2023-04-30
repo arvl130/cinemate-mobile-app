@@ -6,6 +6,7 @@ import { getAuth, getIdToken } from "firebase/auth"
 import { Friend, UserRecord } from "../types/user"
 import { SavedMovie, WatchedMovie, WatchlistMovie } from "../types/saved-movie"
 import { Schedule, ScheduleInvite } from "../types/schedule"
+import { BlockedUser } from "../types/blocked-user"
 
 if (typeof Constants.expoConfig?.extra?.backendBaseUrl !== "string")
   throw new Error("No backend base URL found")
@@ -369,6 +370,63 @@ export async function deleteSchedule(values: {
   )
 
   const data = await response.json()
+  if (!response.ok) {
+    if (data.error) console.log("Error cause:", data.error)
+    throw new Error(data.message)
+  }
+}
+
+export async function getBlockedUsers() {
+  const auth = getAuth()
+  if (!auth.currentUser)
+    throw new Error("Must be authenticated to get blocked users")
+
+  const response = await fetch(
+    `${backendBaseUrl}/user/${auth.currentUser.uid}/blocked`
+  )
+  const { results } = await response.json()
+
+  return results as BlockedUser[]
+}
+
+export async function addBlockedUser(blockedUserId: string) {
+  const auth = getAuth()
+  if (!auth.currentUser)
+    throw new Error("Must be authenticated to add blocked user")
+
+  const response = await fetch(
+    `${backendBaseUrl}/user/${auth.currentUser.uid}/blocked`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        blockedUserId,
+      }),
+    }
+  )
+  const data = await response.json()
+
+  if (!response.ok) {
+    if (data.error) console.log("Error cause:", data.error)
+    throw new Error(data.message)
+  }
+}
+
+export async function removeBlockedUser(blockedUserId: string) {
+  const auth = getAuth()
+  if (!auth.currentUser)
+    throw new Error("Must be authenticated to remove blocked user")
+
+  const response = await fetch(
+    `${backendBaseUrl}/user/${auth.currentUser.uid}/blocked/${blockedUserId}`,
+    {
+      method: "DELETE",
+    }
+  )
+  const data = await response.json()
+
   if (!response.ok) {
     if (data.error) console.log("Error cause:", data.error)
     throw new Error(data.message)

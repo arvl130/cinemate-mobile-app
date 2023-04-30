@@ -35,6 +35,7 @@ import { CreateScheduleScreen } from "./src/screens/HomeTab/CreateSchedule"
 import { EditScheduleScreen } from "./src/screens/HomeTab/EditSchedule"
 import { ScheduleDetailsScreen } from "./src/screens/SchedulesTab/ScheduleDetails"
 import { MyProfileScreen } from "./src/screens/AccountTab/MyProfileScreen"
+import { BlockedUsersScreen } from "./src/screens/AccountTab/BlockedUsers"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -351,6 +352,16 @@ function RootNavigation() {
           <AppStack.Screen
             name="Account Settings"
             component={AccountSettingsScreen}
+            options={{
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
+          <AppStack.Screen
+            name="Blocked Users"
+            component={BlockedUsersScreen}
             options={{
               headerStyle: {
                 backgroundColor: "black",

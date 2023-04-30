@@ -36,6 +36,7 @@ export type AppStackRoutes = {
     isoDate: string
   }
   "Account Settings": undefined
+  "Blocked Users": undefined
 }
 
 export type AppStackProp = NativeStackNavigationProp<AppStackRoutes>

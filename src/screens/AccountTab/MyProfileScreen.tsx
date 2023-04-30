@@ -368,6 +368,7 @@ function OtherSettingsModal({
           <TouchableOpacity
             className="py-3"
             onPress={() => {
+              navigation.push("Blocked Users")
               closeFn()
             }}
           >
