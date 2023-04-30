@@ -8,12 +8,14 @@ import {
 } from "react-native"
 import {
   User,
+  getAuth,
   reauthenticateWithCredential,
   signOut,
   updateEmail,
   updatePassword,
   updateProfile,
 } from "firebase/auth"
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { auth } from "../../firebase"
 import { GradientBackground } from "../../components/gradient-bg"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
@@ -24,20 +26,169 @@ import { Controller, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { EmailAuthProvider } from "firebase/auth/react-native"
+import { launchImageLibraryAsync, MediaTypeOptions } from "expo-image-picker"
+import { FirebaseError } from "firebase/app"
+
+function UpdatePhotoModal({
+  isVisible,
+  closeFn,
+  user,
+}: {
+  isVisible: boolean
+  closeFn: () => void
+  user: User
+}) {
+  const [imageUri, setImageUri] = useState<string | null>(user.photoURL)
+
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackButtonPress={() => {
+        closeFn()
+      }}
+      onBackdropPress={() => {
+        closeFn()
+      }}
+      onSwipeComplete={() => {
+        closeFn()
+      }}
+    >
+      <View className="[background-color:_#2b2b2b] w-72 mx-auto px-6 pt-3 pb-5 rounded-2xl">
+        <View className="flex-row  items-center gap-1 mb-2">
+          <TouchableOpacity
+            onPress={() => {
+              closeFn()
+            }}
+          >
+            <Ionicons name="arrow-back-outline" size={24} color="white" />
+          </TouchableOpacity>
+          <Text className="text-white font-semibold text-lg pb-1">
+            Change Email
+          </Text>
+        </View>
+
+        <View>
+          <View className="mb-3">
+            <View className="w-20 h-20 mx-auto">
+              {imageUri ? (
+                <Image
+                  className="w-full h-full rounded-full"
+                  source={{
+                    uri: imageUri,
+                  }}
+                />
+              ) : (
+                <Image
+                  className="w-full h-full rounded-full"
+                  source={require("../../assets/no-photo-url.jpg")}
+                />
+              )}
+            </View>
+          </View>
+
+          <View className="mb-3 flex-row">
+            <TouchableOpacity
+              className="mx-auto"
+              onPress={async () => {
+                const result = await launchImageLibraryAsync({
+                  mediaTypes: MediaTypeOptions.Images,
+                  allowsEditing: true,
+                  aspect: [1, 1],
+                  quality: 1,
+                })
+
+                if (!result.assets) return
+                setImageUri(result.assets[0].uri)
+              }}
+            >
+              <Text className="bg-gray-300 text-gray-800 px-4 py-3 text-center rounded-lg">
+                Choose an Image
+              </Text>
+            </TouchableOpacity>
+            {imageUri !== null && (
+              <TouchableOpacity
+                className="mx-auto"
+                onPress={async () => {
+                  setImageUri(null)
+                }}
+              >
+                <Text className="bg-gray-300 text-gray-800 px-4 py-3 text-center rounded-lg">
+                  Clear
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <TouchableOpacity
+            className="mx-auto"
+            onPress={async () => {
+              try {
+                if (imageUri) {
+                  const storage = getStorage()
+                  const response = await fetch(imageUri)
+                  const imageBlob = await response.blob()
+                  const imageRef = ref(storage, `profile-pictures/${user.uid}`)
+
+                  await uploadBytes(imageRef, imageBlob)
+                  const downloadUrl = await getDownloadURL(imageRef)
+                  await updateProfile(user, {
+                    photoURL: downloadUrl,
+                  })
+                } else {
+                  await updateProfile(user, {
+                    photoURL: null,
+                  })
+                }
+                closeFn()
+              } catch (e) {
+                console.log("Error occured", e)
+              }
+            }}
+          >
+            <Text className="[background-color:_#FE6007] text-white w-24 py-3 text-center rounded-lg">
+              SAVE
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  )
+}
 
 function UpdatePhotoSection({ user }: { user: User }) {
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
   return (
     <View className="flex-row items-center justify-center">
       <View className="items-center">
-        <Image
-          source={{
-            uri: "https://www.angelogeulin.me/assets/profile-picture.ca024b3e.webp",
-          }}
-          className="h-24 w-24 rounded-full"
-        ></Image>
-        <TouchableOpacity activeOpacity={0.8} className="mt-2">
-          <Text className="text-blue-500 underline text-xs">Edit Picture</Text>
+        <View>
+          <View className="w-28 h-28 mx-auto">
+            {user.photoURL ? (
+              <Image
+                className="w-full h-full rounded-full"
+                source={{
+                  uri: user.photoURL,
+                }}
+              />
+            ) : (
+              <Image
+                className="w-full h-full rounded-full"
+                source={require("../../assets/no-photo-url.jpg")}
+              />
+            )}
+          </View>
+        </View>
+        <TouchableOpacity
+          className="mt-2"
+          onPress={() => setIsModalVisible(true)}
+        >
+          <Text className="text-blue-500 underline">Edit Picture</Text>
         </TouchableOpacity>
+        <UpdatePhotoModal
+          user={user}
+          closeFn={() => setIsModalVisible(false)}
+          isVisible={isModalVisible}
+        />
       </View>
     </View>
   )
