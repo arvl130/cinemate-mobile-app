@@ -105,10 +105,6 @@ function AccountTab() {
       }}
     >
       <AccountStack.Screen name="My Profile" component={MyProfileScreen} />
-      <AccountStack.Screen
-        name="Account Settings"
-        component={AccountSettingsScreen}
-      />
     </AccountStack.Navigator>
   )
 }
@@ -346,6 +342,16 @@ function RootNavigation() {
             component={ScheduleDetailsScreen}
             options={{
               animation: "slide_from_right",
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
+          <AppStack.Screen
+            name="Account Settings"
+            component={AccountSettingsScreen}
+            options={{
               headerStyle: {
                 backgroundColor: "black",
               },

@@ -35,6 +35,7 @@ export type AppStackRoutes = {
   "Schedule Details": {
     isoDate: string
   }
+  "Account Settings": undefined
 }
 
 export type AppStackProp = NativeStackNavigationProp<AppStackRoutes>

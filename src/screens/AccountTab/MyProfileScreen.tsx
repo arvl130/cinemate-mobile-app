@@ -337,6 +337,8 @@ function OtherSettingsModal({
   isVisible: boolean
   closeFn: () => void
 }) {
+  const navigation = useNavigation<AppStackProp>()
+
   return (
     <Modal
       isVisible={isVisible}
@@ -354,6 +356,7 @@ function OtherSettingsModal({
           <TouchableOpacity
             className="py-3"
             onPress={() => {
+              navigation.push("Account Settings")
               closeFn()
             }}
           >
