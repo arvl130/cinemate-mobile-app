@@ -5,6 +5,8 @@ import { getMovieDetails, getSchedule, getUserProfile } from "../../utils/api"
 import { useQuery } from "@tanstack/react-query"
 import { Schedule, ScheduleInvite } from "../../types/schedule"
 import { MovieDetails } from "tmdb-ts"
+import { AppStackProp } from "../../types/routes"
+import { useNavigation } from "@react-navigation/native"
 
 function MovieDetailsSection({ movieDetails }: { movieDetails: MovieDetails }) {
   return (
@@ -55,8 +57,9 @@ function DateAndTimeSection({ schedule }: { schedule: Schedule }) {
     const minutesInt = date.getMinutes()
     const minutes = minutesInt > 9 ? `${minutesInt}` : `0${minutesInt}`
 
-    return `${date.getFullYear()}-${day}-${month} ${hours}:${minutes}`
+    return `${date.getFullYear()}-${month}-${day} ${hours}:${minutes}`
   }
+  const navigation = useNavigation<AppStackProp>()
 
   return (
     <View className="flex-row flex-1 border-b border-gray-400 pb-2">
@@ -67,7 +70,15 @@ function DateAndTimeSection({ schedule }: { schedule: Schedule }) {
         </Text>
       </View>
       <View className="flex-row items-center">
-        <TouchableOpacity activeOpacity={0.5}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => {
+            navigation.push("Edit Schedule", {
+              isoDate: schedule.isoDate,
+              movieId: schedule.movieId,
+            })
+          }}
+        >
           <Text className="[color:_#FE6007] font-medium px-3">Edit</Text>
         </TouchableOpacity>
       </View>

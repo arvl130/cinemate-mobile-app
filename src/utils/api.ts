@@ -327,3 +327,32 @@ export async function createSchedule(
     throw new Error(data.message)
   }
 }
+
+export async function editSchedule(values: {
+  userId: string
+  isoDate: string
+  newIsoDate: string
+  movieId: number
+  invitedFriendIds: string[]
+}) {
+  const response = await fetch(
+    `${backendBaseUrl}/user/${values.userId}/schedule/${values.isoDate}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        isoDate: values.newIsoDate,
+        movieId: values.movieId,
+        invitedFriendIds: values.invitedFriendIds,
+      }),
+    }
+  )
+
+  const data = await response.json()
+  if (!response.ok) {
+    if (data.error) console.log("Error cause:", data.error)
+    throw new Error(data.message)
+  }
+}

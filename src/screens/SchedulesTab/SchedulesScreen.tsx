@@ -76,7 +76,7 @@ function SchedulesSectionItem({ schedule }: { schedule: Schedule }) {
     const dayInt = date.getDate()
     const day = dayInt > 9 ? `${dayInt}` : `0${dayInt}`
 
-    return `${date.getFullYear()}-${day}-${month}`
+    return `${date.getFullYear()}-${month}-${day}`
   }
 
   if (isLoading) return <Text className="text-center text-white">...</Text>

@@ -1,8 +1,16 @@
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import type { NavigatorScreenParams } from "@react-navigation/native"
+
+type AuthenticatedTabsRoutes = {
+  "Home Tab": undefined
+  "Friends Tab": undefined
+  "Schedules Tab": undefined
+  "Account Tab": undefined
+}
 
 export type AppStackRoutes = {
   "Onboarding Screens": undefined
-  "Authenticated Tabs": undefined
+  "Authenticated Tabs": NavigatorScreenParams<AuthenticatedTabsRoutes>
   "Search Movies": undefined
   "Movie Details": {
     movieId: number
@@ -19,6 +27,10 @@ export type AppStackRoutes = {
   }
   "Create Schedule": {
     movieId: number
+  }
+  "Edit Schedule": {
+    movieId: number
+    isoDate: string
   }
   "Schedule Details": {
     isoDate: string

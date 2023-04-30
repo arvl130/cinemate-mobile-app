@@ -32,6 +32,7 @@ import { SearchFriendsScreen } from "./src/screens/FriendsTab/SearchFriendsScree
 import { AppStackRoutes } from "./src/types/routes"
 import { FriendProfileScreen } from "./src/screens/FriendsTab/FriendProfile"
 import { CreateScheduleScreen } from "./src/screens/HomeTab/CreateSchedule"
+import { EditScheduleScreen } from "./src/screens/HomeTab/EditSchedule"
 import { ScheduleDetailsScreen } from "./src/screens/SchedulesTab/ScheduleDetails"
 
 const OnboardingStack = createNativeStackNavigator()
@@ -118,7 +119,10 @@ type OnboardingScreensProps = NativeStackScreenProps<
 function OnboardingScreens({ navigation }: OnboardingScreensProps) {
   const { isLoading, isAuthenticated } = useAuthState()
   useEffect(() => {
-    if (!isLoading && isAuthenticated) navigation.replace("Authenticated Tabs")
+    if (!isLoading && isAuthenticated)
+      navigation.replace("Authenticated Tabs", {
+        screen: "Home Tab",
+      })
   }, [isLoading, isAuthenticated])
 
   if (isLoading) return <></>
@@ -316,6 +320,17 @@ function RootNavigation() {
           <AppStack.Screen
             name="Create Schedule"
             component={CreateScheduleScreen}
+            options={{
+              animation: "slide_from_right",
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
+          <AppStack.Screen
+            name="Edit Schedule"
+            component={EditScheduleScreen}
             options={{
               animation: "slide_from_right",
               headerStyle: {
