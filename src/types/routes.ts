@@ -20,6 +20,9 @@ export type AppStackRoutes = {
   "Create Schedule": {
     movieId: number
   }
+  "Schedule Details": {
+    isoDate: string
+  }
 }
 
 export type AppStackProp = NativeStackNavigationProp<AppStackRoutes>

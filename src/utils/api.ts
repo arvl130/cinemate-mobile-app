@@ -5,7 +5,7 @@ import { Review } from "../types/review"
 import { getAuth, getIdToken } from "firebase/auth"
 import { Friend, UserRecord } from "../types/user"
 import { SavedMovie, WatchedMovie, WatchlistMovie } from "../types/saved-movie"
-import { Schedule } from "../types/schedule"
+import { Schedule, ScheduleInvite } from "../types/schedule"
 
 if (typeof Constants.expoConfig?.extra?.backendBaseUrl !== "string")
   throw new Error("No backend base URL found")
@@ -290,7 +290,19 @@ export async function removeWatchlistMovie(userId: string, movieId: number) {
 export async function getSchedules(userId: string) {
   const response = await fetch(`${backendBaseUrl}/user/${userId}/schedule`)
   const { results } = await response.json()
-  return results as Schedule[]
+  return results as (Schedule & {
+    scheduleInvites: ScheduleInvite[]
+  })[]
+}
+
+export async function getSchedule(userId: string, isoDate: string) {
+  const response = await fetch(
+    `${backendBaseUrl}/user/${userId}/schedule/${isoDate}`
+  )
+  const { result } = await response.json()
+  return result as Schedule & {
+    scheduleInvites: ScheduleInvite[]
+  }
 }
 
 export async function createSchedule(

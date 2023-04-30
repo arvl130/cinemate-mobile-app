@@ -32,6 +32,7 @@ import { SearchFriendsScreen } from "./src/screens/FriendsTab/SearchFriendsScree
 import { AppStackRoutes } from "./src/types/routes"
 import { FriendProfileScreen } from "./src/screens/FriendsTab/FriendProfile"
 import { CreateScheduleScreen } from "./src/screens/HomeTab/CreateSchedule"
+import { ScheduleDetailsScreen } from "./src/screens/SchedulesTab/ScheduleDetails"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -315,6 +316,17 @@ function RootNavigation() {
           <AppStack.Screen
             name="Create Schedule"
             component={CreateScheduleScreen}
+            options={{
+              animation: "slide_from_right",
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
+          <AppStack.Screen
+            name="Schedule Details"
+            component={ScheduleDetailsScreen}
             options={{
               animation: "slide_from_right",
               headerStyle: {

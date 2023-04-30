@@ -9,13 +9,14 @@ import {
   SafeAreaView,
 } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
-import { Ionicons } from "@expo/vector-icons"
 import { GradientBackground } from "../../components/gradient-bg"
 import { useQuery } from "@tanstack/react-query"
 import { getMovieDetails, getSchedules } from "../../utils/api"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
 import { Schedule } from "../../types/schedule"
 import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
+import { useNavigation } from "@react-navigation/native"
+import { AppStackProp } from "../../types/routes"
 
 const { height } = Dimensions.get("window")
 
@@ -66,6 +67,8 @@ function SchedulesSectionItem({ schedule }: { schedule: Schedule }) {
     queryFn: () => getMovieDetails(schedule.movieId),
   })
 
+  const navigation = useNavigation<AppStackProp>()
+
   function formattedDate(dateStr: string) {
     const date = new Date(dateStr)
     const monthInt = date.getMonth() + 1
@@ -81,7 +84,14 @@ function SchedulesSectionItem({ schedule }: { schedule: Schedule }) {
     return <Text className="text-center text-red-500">Error occured</Text>
 
   return (
-    <TouchableOpacity activeOpacity={0.7}>
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={() => {
+        navigation.push("Schedule Details", {
+          isoDate: schedule.isoDate,
+        })
+      }}
+    >
       <View className="px-1 py-1 border-b [border-color:_#2B2B2B] flex-row flex-[0]">
         <View className="flex-[2]">
           <Image
