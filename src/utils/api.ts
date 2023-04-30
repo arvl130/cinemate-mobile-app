@@ -5,6 +5,7 @@ import { Review } from "../types/review"
 import { getAuth, getIdToken } from "firebase/auth"
 import { Friend, UserRecord } from "../types/user"
 import { SavedMovie, WatchedMovie, WatchlistMovie } from "../types/saved-movie"
+import { Schedule } from "../types/schedule"
 
 if (typeof Constants.expoConfig?.extra?.backendBaseUrl !== "string")
   throw new Error("No backend base URL found")
@@ -284,6 +285,12 @@ export async function removeWatchlistMovie(userId: string, movieId: number) {
     if (data.error) console.log("Error cause:", data.error)
     throw new Error(data.message)
   }
+}
+
+export async function getSchedules(userId: string) {
+  const response = await fetch(`${backendBaseUrl}/user/${userId}/schedule`)
+  const { results } = await response.json()
+  return results as Schedule[]
 }
 
 export async function createSchedule(
