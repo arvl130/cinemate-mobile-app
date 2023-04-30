@@ -163,7 +163,10 @@ function SchedulesSection({ userId }: { userId: string }) {
                 ) : (
                   <>
                     {schedules.map((schedule) => (
-                      <SchedulesSectionItem schedule={schedule} />
+                      <SchedulesSectionItem
+                        key={schedule.isoDate}
+                        schedule={schedule}
+                      />
                     ))}
                   </>
                 )}
