@@ -22,7 +22,7 @@ function BlockedUserItem({
   })
 
   const { refetch } = useQuery({
-    queryKey: ["getFriends", userId],
+    queryKey: ["getBlockedUsers", userId],
     queryFn: () => getBlockedUsers(),
   })
   const { mutate: doRemoveBlockedUser } = useMutation({
@@ -87,7 +87,7 @@ function MainContent({ user }: { user: User }) {
     isError,
     data: blockedUsers,
   } = useQuery({
-    queryKey: ["getFriends", user.uid],
+    queryKey: ["getBlockedUsers", user.uid],
     queryFn: () => getBlockedUsers(),
   })
 
