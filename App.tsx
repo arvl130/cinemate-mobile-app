@@ -34,6 +34,7 @@ import { FriendProfileScreen } from "./src/screens/FriendsTab/FriendProfile"
 import { CreateScheduleScreen } from "./src/screens/HomeTab/CreateSchedule"
 import { EditScheduleScreen } from "./src/screens/HomeTab/EditSchedule"
 import { ScheduleDetailsScreen } from "./src/screens/SchedulesTab/ScheduleDetails"
+import { MyProfileScreen } from "./src/screens/AccountTab/MyProfileScreen"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -103,6 +104,7 @@ function AccountTab() {
         headerTintColor: "white",
       }}
     >
+      <AccountStack.Screen name="My Profile" component={MyProfileScreen} />
       <AccountStack.Screen
         name="Account Settings"
         component={AccountSettingsScreen}
