@@ -17,6 +17,9 @@ export type AppStackRoutes = {
   "Friend Profile": {
     friendId: string
   }
+  "Create Schedule": {
+    movieId: number
+  }
 }
 
 export type AppStackProp = NativeStackNavigationProp<AppStackRoutes>

@@ -285,3 +285,26 @@ export async function removeWatchlistMovie(userId: string, movieId: number) {
     throw new Error(data.message)
   }
 }
+
+export async function createSchedule(
+  userId: string,
+  values: {
+    isoDate: string
+    movieId: number
+    invitedFriendIds: string[]
+  }
+) {
+  const response = await fetch(`${backendBaseUrl}/user/${userId}/schedule`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(values),
+  })
+
+  const data = await response.json()
+  if (!response.ok) {
+    if (data.error) console.log("Error cause:", data.error)
+    throw new Error(data.message)
+  }
+}

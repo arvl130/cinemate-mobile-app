@@ -31,6 +31,7 @@ import { EditReviewScreen } from "./src/screens/HomeTab/EditReview"
 import { SearchFriendsScreen } from "./src/screens/FriendsTab/SearchFriendsScreen"
 import { AppStackRoutes } from "./src/types/routes"
 import { FriendProfileScreen } from "./src/screens/FriendsTab/FriendProfile"
+import { CreateScheduleScreen } from "./src/screens/HomeTab/CreateSchedule"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -303,6 +304,17 @@ function RootNavigation() {
           <AppStack.Screen
             name="Friend Profile"
             component={FriendProfileScreen}
+            options={{
+              animation: "slide_from_right",
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
+          <AppStack.Screen
+            name="Create Schedule"
+            component={CreateScheduleScreen}
             options={{
               animation: "slide_from_right",
               headerStyle: {
