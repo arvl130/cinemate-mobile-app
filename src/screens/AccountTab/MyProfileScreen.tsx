@@ -1,22 +1,19 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { FlatList, ScrollView, TouchableOpacity, View } from "react-native"
+import { useQuery } from "@tanstack/react-query"
+import { FlatList, TouchableOpacity, View } from "react-native"
 import {
-  addFriend,
   getMovieDetails,
   getReviewedMovies,
   getSchedules,
   getUserProfile,
   getWatchedMovies,
   getWatchlistMovies,
-  removeFriend,
 } from "../../utils/api"
 import { Text, Image } from "react-native"
 import Modal from "react-native-modal"
-import { ReactNode, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
 import { AppStackProp } from "../../types/routes"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
-import { getFriends } from "../../utils/api"
 import { Review } from "../../types/review"
 import { Entypo, Ionicons } from "@expo/vector-icons"
 import { GradientBackground } from "../../components/gradient-bg"
@@ -333,6 +330,57 @@ function ProfileTab({
   )
 }
 
+function OtherSettingsModal({
+  isVisible,
+  closeFn,
+}: {
+  isVisible: boolean
+  closeFn: () => void
+}) {
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackButtonPress={() => closeFn()}
+      onBackdropPress={() => closeFn()}
+      onSwipeComplete={() => closeFn()}
+      swipeDirection={["down"]}
+      className="m-0 justify-end"
+    >
+      <View className=" [background-color:_#2B2B2B] rounded-t-2xl">
+        <View className="flex-row justify-center pt-6">
+          <View className="bg-white h-1 rounded-full w-6"></View>
+        </View>
+        <View className="px-12 pt-3 pb-6">
+          <TouchableOpacity
+            className="py-3"
+            onPress={() => {
+              closeFn()
+            }}
+          >
+            <Text className="text-white">Account Settings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="py-3"
+            onPress={() => {
+              closeFn()
+            }}
+          >
+            <Text className="text-white">Blocked Users</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
+function HamburgerMenu({ actionFn }: { actionFn: () => void }) {
+  return (
+    <TouchableOpacity onPress={actionFn}>
+      <Entypo name="dots-three-vertical" size={20} color="white" />
+    </TouchableOpacity>
+  )
+}
+
 export function UserLodaded({ userId }: { userId: string }) {
   const {
     isLoading,
@@ -348,6 +396,18 @@ export function UserLodaded({ userId }: { userId: string }) {
   const [selectedTab, setSelectedTab] = useState<
     "WATCHED" | "WATCHLIST" | "SCHEDULED" | "REVIEWED"
   >("WATCHED")
+
+  const [isOtherSettingsModalVisible, setIsOtherSettingsModalVisible] =
+    useState(false)
+
+  const navigation = useNavigation()
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HamburgerMenu actionFn={() => setIsOtherSettingsModalVisible(true)} />
+      ),
+    })
+  }, [])
 
   return (
     <View className="flex-1 px-3">
@@ -445,6 +505,10 @@ export function UserLodaded({ userId }: { userId: string }) {
                 {selectedTab === "REVIEWED" && (
                   <ReviewedTab friendId={userId} />
                 )}
+                <OtherSettingsModal
+                  isVisible={isOtherSettingsModalVisible}
+                  closeFn={() => setIsOtherSettingsModalVisible(false)}
+                />
               </>
             )}
           </>
