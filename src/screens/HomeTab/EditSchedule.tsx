@@ -1,4 +1,11 @@
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
+import {
+  Image,
+  ScrollView,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import { GradientBackground } from "../../components/gradient-bg"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { useState } from "react"
@@ -17,6 +24,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { DateTime } from "luxon"
 import { useNavigation } from "@react-navigation/native"
 import { AppStackProp } from "../../types/routes"
+import {
+  cancelScheduledNotificationAsync,
+  scheduleNotificationAsync,
+} from "expo-notifications"
 
 function DatePicker({
   selectedDate,
@@ -275,12 +286,14 @@ function EditForm({
   initialSelectedFriends,
   userId,
   isPending,
+  notificationId,
 }: {
   movieId: number
   initialDate: Date
   initialSelectedFriends: string[]
   userId: string
   isPending: boolean
+  notificationId: string
 }) {
   const [selectedDate, setSelectedDate] = useState(initialDate)
   const [selectedTime, setSelectedTime] = useState(initialDate)
@@ -316,15 +329,27 @@ function EditForm({
   const navigation = useNavigation<AppStackProp>()
   const { mutate: doEditSchedule } = useMutation({
     mutationKey: ["editSchedule", userId, initialDate],
-    mutationFn: (values: {
+    mutationFn: async (values: {
       userId: string
       isoDate: string
       newIsoDate: string
       movieId: number
       invitedFriendIds: string[]
       isPending: boolean
-    }) => editSchedule(values),
+      notificationId: string
+    }) => {
+      await cancelScheduledNotificationAsync(values.notificationId)
+      const notificationId = await scheduleNotificationAsync({
+        content: {
+          title: `You have a watch schedule`,
+          body: `For ${values.movieId}.`,
+        },
+        trigger: new Date(values.newIsoDate),
+      })
+      editSchedule({ ...values, notificationId })
+    },
     onSuccess: () => {
+      ToastAndroid.show("Edited successfully.", ToastAndroid.SHORT)
       navigation.navigate("Authenticated Tabs", {
         screen: "Schedules Tab",
       })
@@ -335,7 +360,9 @@ function EditForm({
     mutationKey: ["deleteSchedule", userId, initialDate],
     mutationFn: (values: { userId: string; isoDate: string }) =>
       deleteSchedule(values),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await cancelScheduledNotificationAsync(notificationId)
+      ToastAndroid.show("Schedule deleted.", ToastAndroid.SHORT)
       navigation.navigate("Authenticated Tabs", {
         screen: "Schedules Tab",
       })
@@ -430,6 +457,7 @@ function EditForm({
               movieId: formData.movieId,
               userId,
               isPending,
+              notificationId,
             })
           })}
           activeOpacity={0.6}
@@ -480,6 +508,7 @@ function UserLoaded({
         (scheduleInvite) => scheduleInvite.friendId
       )}
       isPending={schedule.isPending}
+      notificationId={schedule.notificationId}
     />
   )
 }

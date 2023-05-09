@@ -1,4 +1,11 @@
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
+import {
+  Image,
+  ScrollView,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import { GradientBackground } from "../../components/gradient-bg"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { useState } from "react"
@@ -11,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { DateTime } from "luxon"
 import { useNavigation } from "@react-navigation/native"
 import { AppStackProp } from "../../types/routes"
+import * as Notifications from "expo-notifications"
 
 function DatePicker({
   selectedDate,
@@ -360,7 +368,19 @@ export function CreateScheduleScreen({ route }: any) {
           <View className="px-3">
             <TouchableOpacity
               onPress={handleSubmit(async (formData) => {
-                await createSchedule(user.uid, formData)
+                const notificationId =
+                  await Notifications.scheduleNotificationAsync({
+                    content: {
+                      title: "You have a watch schedule",
+                      body: `For ${formData.movieId}.`,
+                    },
+                    trigger: new Date(formData.isoDate),
+                  })
+                await createSchedule(user.uid, {
+                  ...formData,
+                  notificationId,
+                })
+                ToastAndroid.show("Scheduled successfully.", ToastAndroid.SHORT)
                 navigation.goBack()
               })}
               activeOpacity={0.6}

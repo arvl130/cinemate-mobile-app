@@ -3,6 +3,7 @@ export type Schedule = {
   isoDate: string
   movieId: number
   isPending: boolean
+  notificationId: string
 }
 
 export type ScheduleInvite = {

@@ -83,6 +83,7 @@ function TopActionButtons({
         movieId: schedule.movieId,
         newIsoDate: schedule.isoDate,
         isPending: false,
+        notificationId: schedule.notificationId,
         invitedFriendIds: schedule.scheduleInvites.map(
           (scheduleInvite) => scheduleInvite.friendId
         ),
