@@ -12,7 +12,13 @@ import Modal from "react-native-modal"
 import { FontAwesome } from "@expo/vector-icons"
 import { Entypo } from "@expo/vector-icons"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { getFriends, getUserProfile, removeFriend } from "../../utils/api"
+import {
+  addBlockedUser,
+  getBlockedUsers,
+  getFriends,
+  getUserProfile,
+  removeFriend,
+} from "../../utils/api"
 import { useNavigation } from "@react-navigation/native"
 import { AppStackProp } from "../../types/routes"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
@@ -37,10 +43,27 @@ function FriendsSectionItem({
     queryKey: ["getFriends", userId],
     queryFn: () => getFriends(),
   })
+
+  const { refetch: refetchBlockedUsers } = useQuery({
+    queryKey: ["getBlockedUsers", userId],
+    queryFn: () => getBlockedUsers(),
+  })
+
   const { mutate: doRemoveFriend } = useMutation({
     mutationKey: ["removeFriend", userId, friendId],
     mutationFn: (values: { friendId: string }) => removeFriend(values.friendId),
     onSuccess: () => refetch(),
+  })
+
+  const { mutate: doAddBlockedUser } = useMutation({
+    mutationKey: ["addBlockedUser", userId, friendId],
+    mutationFn: () => addBlockedUser(friendId),
+    onSuccess: () => {
+      refetchBlockedUsers()
+      doRemoveFriend({
+        friendId,
+      })
+    },
   })
 
   if (isLoading)
@@ -142,6 +165,7 @@ function FriendsSectionItem({
               className="py-3"
               onPress={() => {
                 setIsModalVisible(false)
+                doAddBlockedUser()
               }}
             >
               <Text className="text-white">Block</Text>
