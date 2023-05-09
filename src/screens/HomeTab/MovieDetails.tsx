@@ -331,11 +331,28 @@ function ReviewSectionItem({
     <View>
       <View className="flex-row gap-3 items-center mb-3">
         <View className="h-12 w-12">
-          {/* TODO: Show profile picture here. */}
-          <Image
-            className="w-full h-full rounded-full"
-            source={require("../../assets/no-photo-url.jpg")}
-          />
+          {data === undefined ? (
+            <Image
+              className="w-full h-full rounded-full"
+              source={require("../../assets/no-photo-url.jpg")}
+            />
+          ) : (
+            <>
+              {data.photoURL ? (
+                <Image
+                  className="w-full h-full rounded-full"
+                  source={{
+                    uri: data.photoURL,
+                  }}
+                />
+              ) : (
+                <Image
+                  className="w-full h-full rounded-full"
+                  source={require("../../assets/no-photo-url.jpg")}
+                />
+              )}
+            </>
+          )}
         </View>
         <View className="flex-1">
           <View>
