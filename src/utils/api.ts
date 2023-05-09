@@ -23,6 +23,18 @@ export async function searchMovies(query: string) {
   return results as Movie[]
 }
 
+export async function getTrendingMovies() {
+  const response = await fetch(`${backendBaseUrl}/movie/now_showing`)
+  const { results } = await response.json()
+  return results as Movie[]
+}
+
+export async function getPopularMovies() {
+  const response = await fetch(`${backendBaseUrl}/movie/popular/movie`)
+  const { results } = await response.json()
+  return results as Movie[]
+}
+
 export function getMovieDetails(id: number) {
   return tmdb.movies.details(id)
 }

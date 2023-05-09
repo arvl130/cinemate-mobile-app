@@ -13,6 +13,9 @@ import { useNavigation } from "@react-navigation/native"
 import { MovieListEntry } from "../../types/Movie"
 import { AppStackProp } from "../../types/routes"
 import { GradientBackground } from "../../components/gradient-bg"
+import { useQuery } from "@tanstack/react-query"
+import { getPopularMovies, getTrendingMovies } from "../../utils/api"
+import { Movie } from "tmdb-ts"
 
 function SearchSection() {
   const navigation = useNavigation<AppStackProp>()
@@ -55,61 +58,7 @@ function SearchSection() {
   )
 }
 
-const NEW_RELEASE_DATA: Array<MovieListEntry> = [
-  {
-    adult: false,
-    backdrop_path: "/zxWAv1A34kdYslBi4ekMDtgIGUt.jpg",
-    genre_ids: [28, 12, 14],
-    id: 566525,
-    original_language: "en",
-    original_title: "Shang-Chi and the Legend of the Ten Rings",
-    overview:
-      "Shang-Chi must confront the past he thought he left behind when he is drawn into the web of the mysterious Ten Rings organization.",
-    popularity: 122.899,
-    poster_path: "/1BIoJGKbXjdFDAqUEiA2VHqkK1Z.jpg",
-    release_date: "2021-09-01",
-    title: "Shang-Chi and the Legend of the Ten Rings",
-    video: false,
-    vote_average: 7.626,
-    vote_count: 7840,
-  },
-  {
-    adult: false,
-    backdrop_path: "/en971MEXui9diirXlogOrPKmsEn.jpg",
-    genre_ids: [28, 12, 35],
-    id: 293660,
-    original_language: "en",
-    original_title: "Deadpool",
-    overview:
-      "The origin story of former Special Forces operative turned mercenary Wade Wilson, who, after being subjected to a rogue experiment that leaves him with accelerated healing powers, adopts the alter ego Deadpool. Armed with his new abilities and a dark, twisted sense of humor, Deadpool hunts down the man who nearly destroyed his life.",
-    popularity: 102.355,
-    poster_path: "/fSRb7vyIP8rQpL0I47P3qUsEKX3.jpg",
-    release_date: "2016-02-09",
-    title: "Deadpool",
-    video: false,
-    vote_average: 7.602,
-    vote_count: 28108,
-  },
-  {
-    adult: false,
-    backdrop_path: "/wcKFYIiVDvRURrzglV9kGu7fpfY.jpg",
-    genre_ids: [14, 28, 12],
-    id: 453395,
-    original_language: "en",
-    original_title: "Doctor Strange in the Multiverse of Madness",
-    overview:
-      "Doctor Strange, with the help of mystical allies both old and new, traverses the mind-bending and dangerous alternate realities of the Multiverse to confront a mysterious new adversary.",
-    popularity: 234.939,
-    poster_path: "/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg",
-    release_date: "2022-05-04",
-    title: "Doctor Strange in the Multiverse of Madness",
-    video: false,
-    vote_average: 7.399,
-    vote_count: 7106,
-  },
-]
-
-function NewReleaseSectionItem({ movie }: { movie: MovieListEntry }) {
+function TrendingSectionItem({ movie }: { movie: Movie }) {
   const navigation = useNavigation<AppStackProp>()
 
   return (
@@ -139,7 +88,7 @@ function NewReleaseSectionItem({ movie }: { movie: MovieListEntry }) {
   )
 }
 
-function NewReleaseSection() {
+function TrendingSection() {
   const flatList = useRef<FlatList | null>(null)
   const [currentItem, setCurrentItem] = useState<null | MovieListEntry>(null)
   const viewabilityConfig = { viewAreaCoveragePercentThreshold: 50 }
@@ -156,6 +105,24 @@ function NewReleaseSection() {
     { viewabilityConfig, onViewableItemsChanged },
   ])
 
+  const {
+    isLoading,
+    isError,
+    data: trendingMovies,
+  } = useQuery({
+    queryKey: ["getTrendingMovies"],
+    queryFn: () => getTrendingMovies(),
+  })
+
+  if (isLoading)
+    return <Text className="text-white text-center">Loading ...</Text>
+  if (isError)
+    return (
+      <Text className="text-white text-center">
+        An error while fetching trending movies.
+      </Text>
+    )
+
   return (
     <View>
       <Text
@@ -164,7 +131,7 @@ function NewReleaseSection() {
           fontFamily: "Inter_700Bold",
         }}
       >
-        New release
+        Trending This Week
       </Text>
       <FlatList
         className="mb-3"
@@ -172,8 +139,8 @@ function NewReleaseSection() {
         contentContainerStyle={{ paddingLeft: 24, paddingRight: 24 }}
         showsHorizontalScrollIndicator={false}
         horizontal
-        data={NEW_RELEASE_DATA}
-        renderItem={({ item }) => <NewReleaseSectionItem movie={item} />}
+        data={trendingMovies}
+        renderItem={({ item }) => <TrendingSectionItem movie={item} />}
         keyExtractor={(item) => item.id}
         ItemSeparatorComponent={() => <View className="w-4"></View>}
         // onViewableItemsChanged property is broken, so we have
@@ -182,21 +149,11 @@ function NewReleaseSection() {
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
       />
       {currentItem ? (
-        <View className="px-6 flex-row mb-3">
-          <View className="flex-1">
-            <Text className="text-white font-semibold">
-              {currentItem.title}
-            </Text>
-            <Text className="text-white text-xs">
-              Released: {new Date(currentItem.release_date).getFullYear()}
-            </Text>
-          </View>
-          <View className="flex-1 items-end">
-            <Text className="text-white">⭐⭐⭐</Text>
-            <Text className="text-white text-xs [color:_#848484]">
-              From 342 users
-            </Text>
-          </View>
+        <View className="px-6 mb-3">
+          <Text className="text-white font-semibold">{currentItem.title}</Text>
+          <Text className="text-white text-xs">
+            Released: {new Date(currentItem.release_date).getFullYear()}
+          </Text>
         </View>
       ) : (
         <Text className="text-white text-center mb-3">None selected</Text>
@@ -259,60 +216,6 @@ const FOR_YOU_DATA: Array<MovieListEntry> = [
   },
 ]
 
-const MOVIES_TVSHOWS_POPULAR_DATA = [
-  {
-    adult: false,
-    backdrop_path: "/8H2O044M0xp240emFWAXjZsfLLx.jpg",
-    genre_ids: [53, 878, 28],
-    id: 700391,
-    original_language: "en",
-    original_title: "65",
-    overview:
-      "After a catastrophic crash on an unknown planet, pilot Mills quickly discovers he's actually stranded on Earth…65 million years ago. Now, with only one chance at rescue, Mills and the only other survivor, Koa, must make their way across an unknown terrain riddled with dangerous prehistoric creatures in an epic fight to survive.",
-    popularity: 396.596,
-    poster_path: "/uMMIeMVk1TCG3CZilpxbzFh0JKT.jpg",
-    release_date: "2023-03-02",
-    title: "65",
-    video: false,
-    vote_average: 5.778,
-    vote_count: 72,
-  },
-  {
-    adult: false,
-    backdrop_path: "/o8u0NyEigCEaZHBdCYTRfXR8U4i.jpg",
-    genre_ids: [27, 9648, 53],
-    id: 396422,
-    original_language: "en",
-    original_title: "Annabelle: Creation",
-    overview:
-      "Several years after the tragic death of their little girl, a doll maker and his wife welcome a nun and several girls from a shuttered orphanage into their home, soon becoming the target of the doll maker's possessed creation—Annabelle.",
-    popularity: 48.314,
-    poster_path: "/tb86j8jVCVsdZnzf8I6cIi65IeM.jpg",
-    release_date: "2017-08-03",
-    title: "Annabelle: Creation",
-    video: false,
-    vote_average: 6.597,
-    vote_count: 5056,
-  },
-  {
-    adult: false,
-    backdrop_path: "/kqZb0dzyCBSIoY5Nq0xGnKpWA57.jpg",
-    genre_ids: [53],
-    id: 1020910,
-    original_language: "en",
-    original_title: "Influencer",
-    overview:
-      "While struggling on a solo backpacking trip in Thailand, social media influencer Madison meets CW, who travels with ease and shows her a more uninhibited way of living. But CW's interest in her takes a darker turn.",
-    popularity: 2.368,
-    poster_path: "/8Fk0fxpCKZwBN52xEEog8liY2BY.jpg",
-    release_date: "2023-05-18",
-    title: "Influencer",
-    video: false,
-    vote_average: 0.0,
-    vote_count: 0,
-  },
-]
-
 function ForYouSectionItem({ movie }: { movie: MovieListEntry }) {
   const navigation = useNavigation<AppStackProp>()
 
@@ -352,7 +255,7 @@ function ForYouSection() {
           fontFamily: "Inter_700Bold",
         }}
       >
-        For you
+        For You
       </Text>
       <FlatList
         className="mb-3"
@@ -368,27 +271,41 @@ function ForYouSection() {
   )
 }
 
-function FeaturedSection() {
+function PopularSection() {
+  const {
+    isLoading,
+    isError,
+    data: popularMovies,
+  } = useQuery({
+    queryKey: ["getPopularMovies"],
+    queryFn: () => getPopularMovies(),
+  })
+
+  if (isLoading)
+    return <Text className="text-white text-center">Loading ...</Text>
+  if (isError)
+    return (
+      <Text className="text-white text-center">
+        An error while fetching trending movies.
+      </Text>
+    )
+
   return (
     <View>
-      <View className="flex-row justify-center gap-6 mb-3 px-6">
-        <Text
-          className="text-white"
-          style={{
-            fontFamily: "Inter_700Bold",
-          }}
-        >
-          Movies
-        </Text>
-        <Text className="text-white">TV Shows</Text>
-        <Text className="text-white">All Popular</Text>
-      </View>
+      <Text
+        className="text-white px-6 mb-3"
+        style={{
+          fontFamily: "Inter_700Bold",
+        }}
+      >
+        Popular Today
+      </Text>
       <FlatList
         className="mb-3"
         contentContainerStyle={{ paddingLeft: 24, paddingRight: 24 }}
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={MOVIES_TVSHOWS_POPULAR_DATA}
+        data={popularMovies}
         renderItem={({ item }) => <ForYouSectionItem movie={item} />}
         ItemSeparatorComponent={() => <View className="w-4"></View>}
         keyExtractor={(item) => `${item.id}`}
@@ -404,9 +321,9 @@ export function HomeScreen() {
 
       <ScrollView>
         <SearchSection />
-        <NewReleaseSection />
+        <TrendingSection />
         <ForYouSection />
-        <FeaturedSection />
+        <PopularSection />
       </ScrollView>
     </View>
   )
