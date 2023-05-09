@@ -175,11 +175,13 @@ function SaveButtons({ userId, movieId }: { userId: string; movieId: number }) {
     queryKey: ["savedMovies", userId],
     queryFn: () => getSavedMovies(userId),
   })
+  useRefreshOnFocus(refetch)
 
   const { refetch: refetchWatchedMovies } = useQuery({
     queryKey: ["getWatchedMovies", userId],
     queryFn: () => getWatchedMovies(userId),
   })
+  useRefreshOnFocus(refetchWatchedMovies)
 
   const { mutate: doAddWatchedMovie } = useMutation({
     mutationKey: ["addWatchedMovie", userId, movieId],
@@ -427,10 +429,11 @@ function ReviewSectionOwnReview({
   reviews: Review[]
   goToCreateReview: () => void
 }) {
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["getWatchedMovies", userId],
     queryFn: () => getWatchedMovies(userId),
   })
+  useRefreshOnFocus(refetch)
 
   if (isLoading) return <></>
   if (isError)
@@ -574,7 +577,6 @@ export function MovieDetailsScreen({ route }: any) {
     queryKey: ["movieDetails", movieId],
     queryFn: () => getMovieDetails(movieId),
   })
-
   useRefreshOnFocus(refetch)
 
   return (
