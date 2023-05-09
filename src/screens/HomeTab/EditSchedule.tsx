@@ -296,7 +296,7 @@ function EditForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       movieId,
-      invitedFriendIds: [],
+      invitedFriendIds: initialSelectedFriends,
       isoDate:
         DateTime.fromObject(
           {
