@@ -147,17 +147,17 @@ function SchedulesSection({ userId }: { userId: string }) {
       </View>
       <View>
         {isLoading ? (
-          <Text className="text-center text-white">Loading ...</Text>
+          <Text className="text-center text-white py-6">Loading ...</Text>
         ) : (
           <>
             {isError ? (
-              <Text className="text-center text-white">
+              <Text className="text-center text-white py-6">
                 An error occured while fetching schedules.
               </Text>
             ) : (
               <>
                 {schedules.length === 0 ? (
-                  <Text className="text-center text-white">
+                  <Text className="text-center text-white py-6">
                     No schedules yet.
                   </Text>
                 ) : (
