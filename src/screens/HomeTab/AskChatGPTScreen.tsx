@@ -73,7 +73,7 @@ export function AskChatGPTScreen() {
       <GradientBackground />
       <View className="px-6">
         <Text className="text-white text-lg mb-3">
-          Good day. Here are some some movie recommendations.
+          Good day. Here are some movie recommendations.
         </Text>
         <FlatList
           className="mb-3"
