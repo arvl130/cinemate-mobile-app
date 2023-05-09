@@ -18,6 +18,7 @@ import { Review } from "../../types/review"
 import { Entypo, Ionicons } from "@expo/vector-icons"
 import { GradientBackground } from "../../components/gradient-bg"
 import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
+import { HamburgerMenu } from "../../components/hamburger-menu"
 
 function MovieItem({ movieId }: { movieId: number }) {
   const { isLoading, isError, data } = useQuery({
@@ -377,14 +378,6 @@ function OtherSettingsModal({
         </View>
       </View>
     </Modal>
-  )
-}
-
-function HamburgerMenu({ actionFn }: { actionFn: () => void }) {
-  return (
-    <TouchableOpacity onPress={actionFn}>
-      <Entypo name="dots-three-vertical" size={20} color="white" />
-    </TouchableOpacity>
   )
 }
 

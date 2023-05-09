@@ -12,7 +12,7 @@ import {
 } from "../../utils/api"
 import { Text, Image } from "react-native"
 import Modal from "react-native-modal"
-import { ReactNode, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
 import { AppStackProp } from "../../types/routes"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
@@ -21,6 +21,9 @@ import { Review } from "../../types/review"
 import { Entypo, Ionicons } from "@expo/vector-icons"
 import { GradientBackground } from "../../components/gradient-bg"
 import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
+import { HamburgerMenu } from "../../components/hamburger-menu"
+import { getBlockedUsers } from "../../utils/api"
+import { addBlockedUser } from "../../utils/api"
 
 function MovieItem({ movieId }: { movieId: number }) {
   const { isLoading, isError, data } = useQuery({
@@ -413,8 +416,94 @@ function FriendButtons({
     )
 }
 
+function OtherActionsModal({
+  userId,
+  friendId,
+  isVisible,
+  closeFn,
+}: {
+  userId: string
+  friendId: string
+  isVisible: boolean
+  closeFn: () => void
+}) {
+  const { refetch: refetchFriends } = useQuery({
+    queryKey: ["getFriends", userId],
+    queryFn: () => getFriends(),
+  })
+  const { refetch: refetchBlockedUsers } = useQuery({
+    queryKey: ["getBlockedUsers", userId],
+    queryFn: () => getBlockedUsers(),
+  })
+
+  const { mutate: doAddFriend } = useMutation({
+    mutationKey: ["addFriend", userId, friendId],
+    mutationFn: () => addFriend(friendId),
+    onSuccess: () => refetchFriends(),
+  })
+
+  const { mutate: doAddBlockedUser } = useMutation({
+    mutationKey: ["addBlockedUser", userId, friendId],
+    mutationFn: () => addBlockedUser(friendId),
+    onSuccess: () => refetchBlockedUsers(),
+  })
+
+  const navigation = useNavigation<AppStackProp>()
+
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackButtonPress={() => closeFn()}
+      onBackdropPress={() => closeFn()}
+      onSwipeComplete={() => closeFn()}
+      swipeDirection={["down"]}
+      className="m-0 justify-end"
+    >
+      <View className=" [background-color:_#2B2B2B] rounded-t-2xl">
+        <View className="flex-row justify-center pt-6">
+          <View className="bg-white h-1 rounded-full w-6"></View>
+        </View>
+        <View className="px-12 pt-3 pb-6">
+          <TouchableOpacity
+            className="py-3"
+            onPress={() => {
+              doAddFriend()
+              closeFn()
+            }}
+          >
+            <Text className="text-white">Add Friend</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="py-3"
+            onPress={() => {
+              doAddBlockedUser()
+              closeFn()
+              navigation.navigate("Authenticated Tabs", {
+                screen: "Friends Tab",
+              })
+            }}
+          >
+            <Text className="text-white">Block User</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
 export function FriendProfileScreen({ route }: any) {
   const { friendId } = route.params
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
+  const navigation = useNavigation()
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HamburgerMenu actionFn={() => setIsModalVisible(true)} />
+      ),
+    })
+  }, [])
+
   const {
     isLoading,
     isError,
@@ -438,11 +527,13 @@ export function FriendProfileScreen({ route }: any) {
 
       <>
         {isLoading ? (
-          <Text>Loading ...</Text>
+          <Text className="text-white">Loading ...</Text>
         ) : (
           <>
             {isError ? (
-              <Text>An error occured while</Text>
+              <Text className="text-white">
+                An error occured while loading user.
+              </Text>
             ) : (
               <>
                 <View>
@@ -535,6 +626,20 @@ export function FriendProfileScreen({ route }: any) {
                 {selectedTab === "REVIEWED" && (
                   <ReviewedTab friendId={friendId} />
                 )}
+                <IsAuthenticatedView>
+                  {(user) => (
+                    <>
+                      {isModalVisible && (
+                        <OtherActionsModal
+                          userId={user.uid}
+                          friendId={friendId}
+                          isVisible={isModalVisible}
+                          closeFn={() => setIsModalVisible(false)}
+                        />
+                      )}
+                    </>
+                  )}
+                </IsAuthenticatedView>
               </>
             )}
           </>
