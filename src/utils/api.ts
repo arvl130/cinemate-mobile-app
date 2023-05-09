@@ -229,6 +229,13 @@ export async function searchUserProfiles(query: string) {
   return data.results as UserRecord[]
 }
 
+export async function getFriendsOfUser(userId: string) {
+  const response = await fetch(`${backendBaseUrl}/user/${userId}/friend`)
+  const { results } = await response.json()
+
+  return results as Friend[]
+}
+
 export async function getFriends() {
   const auth = getAuth()
   if (!auth.currentUser) throw new Error("Must be authenticated to add friend")
