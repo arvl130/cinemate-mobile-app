@@ -36,6 +36,8 @@ import { EditScheduleScreen } from "./src/screens/HomeTab/EditSchedule"
 import { ScheduleDetailsScreen } from "./src/screens/SchedulesTab/ScheduleDetails"
 import { MyProfileScreen } from "./src/screens/AccountTab/MyProfileScreen"
 import { BlockedUsersScreen } from "./src/screens/AccountTab/BlockedUsers"
+import Constants from "expo-constants"
+import registerNNPushToken from "native-notify"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -384,6 +386,11 @@ export default function App() {
     Inter_600SemiBold,
     Inter_700Bold,
   })
+
+  registerNNPushToken(
+    Constants.expoConfig?.extra?.nativeNotifyAppId,
+    Constants.expoConfig?.extra?.nativeNotifyAppToken
+  )
 
   if (!fontsLoaded) return <></>
 
