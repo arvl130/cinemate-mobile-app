@@ -38,6 +38,7 @@ import { MyProfileScreen } from "./src/screens/AccountTab/MyProfileScreen"
 import { BlockedUsersScreen } from "./src/screens/AccountTab/BlockedUsers"
 import Constants from "expo-constants"
 import registerNNPushToken from "native-notify"
+import { AskChatGPTScreen } from "./src/screens/HomeTab/AskChatGPTScreen"
 
 const OnboardingStack = createNativeStackNavigator()
 const HomeStack = createNativeStackNavigator()
@@ -364,6 +365,16 @@ function RootNavigation() {
           <AppStack.Screen
             name="Blocked Users"
             component={BlockedUsersScreen}
+            options={{
+              headerStyle: {
+                backgroundColor: "black",
+              },
+              headerTintColor: "white",
+            }}
+          />
+          <AppStack.Screen
+            name="Ask ChatGPT"
+            component={AskChatGPTScreen}
             options={{
               headerStyle: {
                 backgroundColor: "black",

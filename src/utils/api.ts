@@ -35,6 +35,79 @@ export async function getPopularMovies() {
   return results as Movie[]
 }
 
+export const categoryTypes = [
+  "Action",
+  "Adventure",
+  "Animation",
+  "Biography",
+  "Comedy",
+  "Crime",
+  "Documentary",
+  "Drama",
+  "Family",
+  "Fantasy",
+  "Film-Noir",
+  "History",
+  "Horror",
+  "Musical",
+  "Mystery",
+  "Romance",
+  "Sci-Fi",
+  "Sport",
+  "Thriller",
+  "War",
+  "Western",
+  "Art-house",
+  "Black-Comedy",
+  "Chick-flick",
+  "Cult-classic",
+  "Dark-Comedy",
+  "Epic",
+  // "Erotic",
+  "Experimental",
+  "Fairy-tale",
+  "Film-within-a-film",
+  "Futuristic",
+  "Gangster",
+  "Heist",
+  "Historical",
+  "Holiday",
+  "Indie",
+  "Juvenile",
+  "Melodrama",
+  "Monster",
+  "Political",
+  "Psychological",
+  "Road-movie",
+  "Satire",
+  "Science-Fiction",
+  "Slapstick",
+  "Social-issue",
+  "Superhero",
+  "Surreal",
+  "Teen",
+  "Vampire",
+  "Zombie",
+] as const
+
+export type CategoryType = (typeof categoryTypes)[number]
+
+export async function getAiMovieRecommendations() {
+  const response = await fetch(`${backendBaseUrl}/movie/ai-recommendations`)
+  const { results } = await response.json()
+  return results as Movie[]
+}
+
+export async function getAiMovieRecommendationsByCategory(
+  category: CategoryType
+) {
+  const response = await fetch(
+    `${backendBaseUrl}/movie/ai-recommendations/${category}`
+  )
+  const { results } = await response.json()
+  return results as Movie[]
+}
+
 export function getMovieDetails(id: number) {
   return tmdb.movies.details(id)
 }

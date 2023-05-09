@@ -65,32 +65,44 @@ function ShortInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   return (
     <View className="flex-[0] gap-6 flex-row">
       <View className="flex-[2]">
-        <Image
-          source={{
-            uri: `https://image.tmdb.org/t/p/original/${movieDetails.poster_path}`,
-          }}
-          className="h-48 w-32 rounded-2xl mb-3"
-        />
+        {typeof movieDetails.poster_path === "string" ? (
+          <Image
+            source={{
+              uri: `https://image.tmdb.org/t/p/original/${movieDetails.poster_path}`,
+            }}
+            className="h-48 w-32 rounded-2xl mb-3"
+          />
+        ) : (
+          <View className="h-48 w-32 rounded-2xl mb-3 bg-gray-300 justify-center">
+            <Text className="text-gray-500 text-xs px-3 text-center">
+              No Poster Available
+            </Text>
+          </View>
+        )}
       </View>
       <View className="flex-[3]">
         <Text className="text-white font-semibold text-xl mb-1">
           {movieDetails.title}
         </Text>
-        <View className="flex-row flex-wrap gap-2 mb-1">
-          {movieDetails.genres.map((genre) => (
-            <Text
-              key={genre.id}
-              className="bg-gray-500 rounded-full text-white text-xs px-2 py-1"
-            >
-              {genre.name}
-            </Text>
-          ))}
-        </View>
+        {Array.isArray(movieDetails.genres) && (
+          <View className="flex-row flex-wrap gap-2 mb-1">
+            {movieDetails.genres.map((genre) => (
+              <Text
+                key={genre.id}
+                className="bg-gray-500 rounded-full text-white text-xs px-2 py-1"
+              >
+                {genre.name}
+              </Text>
+            ))}
+          </View>
+        )}
         <View className="mb-3">
           <Text className="text-gray-400">
             {new Date(movieDetails.release_date).getFullYear()}
             {" • "}
-            {movieDetails.original_language.toUpperCase()}
+            {typeof movieDetails.original_language === "string"
+              ? movieDetails.original_language.toUpperCase()
+              : "UNK"}
             {" • "}
             {movieDetails.runtime} min
           </Text>

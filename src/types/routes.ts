@@ -37,6 +37,7 @@ export type AppStackRoutes = {
   }
   "Account Settings": undefined
   "Blocked Users": undefined
+  "Ask ChatGPT": undefined
 }
 
 export type AppStackProp = NativeStackNavigationProp<AppStackRoutes>

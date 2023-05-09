@@ -14,8 +14,13 @@ import { MovieListEntry } from "../../types/Movie"
 import { AppStackProp } from "../../types/routes"
 import { GradientBackground } from "../../components/gradient-bg"
 import { useQuery } from "@tanstack/react-query"
-import { getPopularMovies, getTrendingMovies } from "../../utils/api"
-import { Movie } from "tmdb-ts"
+import {
+  getAiMovieRecommendations,
+  getPopularMovies,
+  getTrendingMovies,
+} from "../../utils/api"
+import { Movie, MovieDetails } from "tmdb-ts"
+import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
 
 function SearchSection() {
   const navigation = useNavigation<AppStackProp>()
@@ -216,7 +221,7 @@ const FOR_YOU_DATA: Array<MovieListEntry> = [
   },
 ]
 
-function ForYouSectionItem({ movie }: { movie: MovieListEntry }) {
+function ForYouSectionItem({ movie }: { movie: Movie }) {
   const navigation = useNavigation<AppStackProp>()
 
   return (
@@ -247,22 +252,50 @@ function ForYouSectionItem({ movie }: { movie: MovieListEntry }) {
 }
 
 function ForYouSection() {
+  const navigation = useNavigation<AppStackProp>()
+  const {
+    isLoading,
+    isError,
+    data: aiMovieRecommendations,
+  } = useQuery({
+    queryKey: ["getAiMovieRecommendations"],
+    queryFn: () => getAiMovieRecommendations(),
+  })
+
+  if (isLoading)
+    return <Text className="text-white text-center py-3">Loading ...</Text>
+  if (isError)
+    return (
+      <Text className="text-white text-center py-3">
+        An error while fetching movie recommendations.
+      </Text>
+    )
+
   return (
     <View>
-      <Text
-        className="text-white px-6 mb-3"
-        style={{
-          fontFamily: "Inter_700Bold",
-        }}
-      >
-        For You
-      </Text>
+      <View className="flex-row items-center px-6 mb-3">
+        <Text
+          className="flex-1 text-white items-center"
+          style={{
+            fontFamily: "Inter_700Bold",
+          }}
+        >
+          Recommended by AI
+        </Text>
+        <TouchableOpacity
+          activeOpacity={0.4}
+          className="border border-blue-500 py-1 px-2 rounded-md font-medium"
+          onPress={() => navigation.navigate("Ask ChatGPT")}
+        >
+          <Text className="text-blue-500">Ask ChatGPT</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         className="mb-3"
         contentContainerStyle={{ paddingLeft: 24, paddingRight: 24 }}
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={FOR_YOU_DATA}
+        data={aiMovieRecommendations}
         renderItem={({ item }) => <ForYouSectionItem movie={item} />}
         ItemSeparatorComponent={() => <View className="w-4"></View>}
         keyExtractor={(item) => `${item.id}`}
