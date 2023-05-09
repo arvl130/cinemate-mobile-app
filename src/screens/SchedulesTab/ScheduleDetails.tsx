@@ -1,19 +1,195 @@
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native"
 import { GradientBackground } from "../../components/gradient-bg"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
-import { getMovieDetails, getSchedule, getUserProfile } from "../../utils/api"
-import { useQuery } from "@tanstack/react-query"
+import {
+  editSchedule,
+  getMovieDetails,
+  getMovieReview,
+  getSchedule,
+  getUserProfile,
+} from "../../utils/api"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { Schedule, ScheduleInvite } from "../../types/schedule"
 import { MovieDetails } from "tmdb-ts"
 import { AppStackProp } from "../../types/routes"
 import { useNavigation } from "@react-navigation/native"
+import Modal from "react-native-modal"
+import { useState } from "react"
+import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
 
-function MovieDetailsSection({ movieDetails }: { movieDetails: MovieDetails }) {
+function ScheduleDoneConfirmationModal({
+  isVisible,
+  closeFn,
+  actionFn,
+}: {
+  isVisible: boolean
+  closeFn: () => void
+  actionFn: () => void
+}) {
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackButtonPress={() => closeFn()}
+      onBackdropPress={() => closeFn()}
+    >
+      <View className="[background-color:_#2b2b2b] w-72 mx-auto px-6 pt-3 pb-5 rounded-2xl">
+        <Text className="text-white text-justify mb-3">
+          Are you sure you want to mark this schedule as done? This action
+          cannot be reverted.
+        </Text>
+        <View className="flex-row justify-between">
+          <TouchableOpacity
+            activeOpacity={0.5}
+            className="border [border-color:_#FE6007] rounded-md py-1"
+            onPress={() => closeFn()}
+          >
+            <Text className="[color:_#FE6007] font-medium px-3">Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            className="[background-color:_#FE6007] rounded-md py-1"
+            onPress={() => {
+              closeFn()
+              actionFn()
+            }}
+          >
+            <Text className="text-white font-medium px-3">Continue</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
+function TopActionButtons({
+  schedule,
+}: {
+  schedule: Schedule & {
+    scheduleInvites: ScheduleInvite[]
+  }
+}) {
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
+  const { refetch } = useQuery({
+    queryKey: ["getSchedule", schedule.userId, schedule.isoDate],
+    queryFn: () => getSchedule(schedule.userId, schedule.isoDate),
+  })
+  const { mutate: doEditSchedule } = useMutation({
+    mutationKey: ["editSchedule", schedule.userId, schedule.isoDate],
+    mutationFn: () =>
+      editSchedule({
+        userId: schedule.userId,
+        isoDate: schedule.isoDate,
+        movieId: schedule.movieId,
+        newIsoDate: schedule.isoDate,
+        isPending: false,
+        invitedFriendIds: schedule.scheduleInvites.map(
+          (scheduleInvite) => scheduleInvite.friendId
+        ),
+      }),
+    onSuccess: () => refetch(),
+  })
+
+  const {
+    isLoading,
+    isError,
+    data: review,
+    refetch: refetchReview,
+  } = useQuery({
+    queryKey: ["reviewDetails", schedule.movieId, schedule.userId],
+    queryFn: () => getMovieReview(schedule.movieId, schedule.userId),
+  })
+  useRefreshOnFocus(refetchReview)
+  const navigation = useNavigation<AppStackProp>()
+
+  if (schedule.isPending)
+    return (
+      <View>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          className="[background-color:_#FE6007] rounded-md py-1"
+          onPress={() => {
+            setIsModalVisible(true)
+          }}
+        >
+          <Text className="text-white font-medium px-3">Done</Text>
+        </TouchableOpacity>
+        <ScheduleDoneConfirmationModal
+          isVisible={isModalVisible}
+          closeFn={() => setIsModalVisible(false)}
+          actionFn={() => doEditSchedule()}
+        />
+      </View>
+    )
+
+  if (isLoading)
+    return (
+      <View>
+        <View className="border [border-color:_#FE6007] rounded-md py-1">
+          <Text className="[color:_#FE6007] font-medium px-3">...</Text>
+        </View>
+      </View>
+    )
+
+  if (isError)
+    return (
+      <View>
+        <View className="border [border-color:_#FE6007] rounded-md py-1">
+          <Text className="text-red-500 font-medium px-3">error</Text>
+        </View>
+      </View>
+    )
+
+  if (!review)
+    return (
+      <View>
+        <TouchableOpacity
+          activeOpacity={0.6}
+          className="border [border-color:_#FE6007] rounded-md py-1"
+          onPress={() =>
+            navigation.navigate("Create Review", {
+              movieId: schedule.movieId,
+            })
+          }
+        >
+          <Text className="[color:_#FE6007] font-medium px-3">Review</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  return (
+    <View>
+      <TouchableOpacity
+        activeOpacity={0.6}
+        className="border [border-color:_#FE6007] rounded-md py-1"
+        onPress={() =>
+          navigation.navigate("Edit Review", {
+            movieId: schedule.movieId,
+          })
+        }
+      >
+        <Text className="[color:_#FE6007] font-medium px-3">Review</Text>
+      </TouchableOpacity>
+    </View>
+  )
+}
+
+function MovieDetailsSection({
+  movieDetails,
+  schedule,
+}: {
+  movieDetails: MovieDetails
+  schedule: Schedule & {
+    scheduleInvites: ScheduleInvite[]
+  }
+}) {
   return (
     <View className="border-b border-gray-500 pb-3">
-      <Text className="text-white font-semibold text-lg mb-3">
-        {movieDetails.title}
-      </Text>
+      <View className="flex-row items-baseline">
+        <Text className="flex-1 text-white font-semibold text-lg mb-3">
+          {movieDetails.title}
+        </Text>
+        <TopActionButtons schedule={schedule} />
+      </View>
       <Image
         source={{
           uri: `https://image.tmdb.org/t/p/original/${movieDetails.poster_path}`,
@@ -191,7 +367,7 @@ function AuthenticatedWithScheduleView({
       <GradientBackground />
 
       <ScrollView className="px-6">
-        <MovieDetailsSection movieDetails={movieDetails} />
+        <MovieDetailsSection schedule={schedule} movieDetails={movieDetails} />
         <DateAndTimeSection schedule={schedule} />
         <InvitedFriendsSection schedule={schedule} />
       </ScrollView>
