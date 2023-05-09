@@ -434,3 +434,15 @@ export async function removeBlockedUser(blockedUserId: string) {
     throw new Error(data.message)
   }
 }
+
+export async function getOverallRating(movieId: number) {
+  const response = await fetch(
+    `${backendBaseUrl}/movie/${movieId}/overall-rating`
+  )
+  const { result } = await response.json()
+
+  return result as {
+    rating: number
+    reviewCount: number
+  }
+}

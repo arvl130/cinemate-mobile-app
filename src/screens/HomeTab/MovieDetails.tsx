@@ -4,6 +4,7 @@ import {
   addWatchlistMovie,
   getMovieDetails,
   getMovieReviews,
+  getOverallRating,
   getSavedMovies,
   getSchedules,
   getUserProfile,
@@ -22,6 +23,43 @@ import { Entypo } from "@expo/vector-icons"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { AppStackProp } from "../../types/routes"
 import { GradientBackground } from "../../components/gradient-bg"
+
+function OverallRating({ movieId }: { movieId: number }) {
+  const { isLoading, isError, data, refetch } = useQuery({
+    queryKey: ["getOverallRating", movieId],
+    queryFn: () => getOverallRating(movieId),
+  })
+  useRefreshOnFocus(refetch)
+
+  if (isLoading) return <Text className="text-white">...</Text>
+  if (isError) return <Text className="text-red-500">error</Text>
+
+  if (data.rating === 0)
+    return (
+      <Text className="text-gray-400 text-center">
+        Be the first to rate this movie!
+      </Text>
+    )
+
+  return (
+    <View>
+      {data.rating > 0 ? (
+        <View className="flex-row justify-center">
+          {[...Array(data.rating)].map((value, index) => (
+            <Text key={index}>
+              <Entypo name="star" size={16} color={"#facc15"} />
+            </Text>
+          ))}
+        </View>
+      ) : (
+        <Text className="text-gray-400 text-center">0 stars</Text>
+      )}
+      <Text className="text-gray-400 text-xs text-center">
+        From {data.reviewCount} {data.reviewCount === 1 ? "user" : "users"}
+      </Text>
+    </View>
+  )
+}
 
 function ShortInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   return (
@@ -57,12 +95,7 @@ function ShortInfo({ movieDetails }: { movieDetails: MovieDetails }) {
             {movieDetails.runtime} min
           </Text>
         </View>
-        <View>
-          <Text className="text-center">⭐⭐⭐⭐</Text>
-          <Text className="text-gray-400 text-xs text-center">
-            From 123 users
-          </Text>
-        </View>
+        <OverallRating movieId={movieDetails.id} />
       </View>
     </View>
   )
