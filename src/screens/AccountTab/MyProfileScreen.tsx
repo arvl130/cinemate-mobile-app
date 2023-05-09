@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { FlatList, TouchableOpacity, View } from "react-native"
 import {
+  getFriends,
   getMovieDetails,
   getReviewedMovies,
   getSchedules,
@@ -381,6 +382,118 @@ function OtherSettingsModal({
   )
 }
 
+function FriendsCount({ userId }: { userId: string }) {
+  const {
+    isLoading,
+    isError,
+    data: friends,
+    refetch,
+  } = useQuery({
+    queryKey: ["getFriends", userId],
+    queryFn: () => getFriends(),
+  })
+  useRefreshOnFocus(refetch)
+
+  if (isLoading)
+    return (
+      <View className="flex-1 items-center">
+        <Text className="text-white font-semibold text-lg">...</Text>
+        <Text className="text-white">Friends</Text>
+      </View>
+    )
+
+  if (isError)
+    return (
+      <View className="flex-1 items-center">
+        <Text className="text-red-500 font-semibold text-lg">error</Text>
+        <Text className="text-white">Friends</Text>
+      </View>
+    )
+
+  return (
+    <View className="flex-1 items-center">
+      <Text className="text-white font-semibold text-lg">{friends.length}</Text>
+      <Text className="text-white">Friends</Text>
+    </View>
+  )
+}
+
+function WatchedCount({ userId }: { userId: string }) {
+  const {
+    isLoading,
+    isError,
+    data: watchedMovies,
+    refetch,
+  } = useQuery({
+    queryKey: ["getWatchedMovies", userId],
+    queryFn: () => getWatchedMovies(userId),
+  })
+  useRefreshOnFocus(refetch)
+
+  if (isLoading)
+    return (
+      <View className="flex-1 items-center">
+        <Text className="text-white font-semibold text-lg">...</Text>
+        <Text className="text-white">Watched</Text>
+      </View>
+    )
+
+  if (isError)
+    return (
+      <View className="flex-1 items-center">
+        <Text className="text-red-500 font-semibold text-lg">error</Text>
+        <Text className="text-white">Watched</Text>
+      </View>
+    )
+
+  return (
+    <View className="flex-1 items-center">
+      <Text className="text-white font-semibold text-lg">
+        {watchedMovies.length}
+      </Text>
+      <Text className="text-white">Watched</Text>
+    </View>
+  )
+}
+
+function ScheduledCount({ userId }: { userId: string }) {
+  const {
+    isLoading,
+    isError,
+    data: schedules,
+    refetch,
+  } = useQuery({
+    queryKey: ["getSchedules", userId],
+    queryFn: () => getSchedules(userId),
+  })
+  useRefreshOnFocus(refetch)
+
+  if (isLoading)
+    return (
+      <View className="flex-1 items-center">
+        <Text className="text-white font-semibold text-lg">...</Text>
+        <Text className="text-white">Scheduled</Text>
+      </View>
+    )
+
+  if (isError)
+    return (
+      <View className="flex-1 items-center">
+        <Text className="text-red-500 font-semibold text-lg">error</Text>
+        <Text className="text-white">Scheduled</Text>
+      </View>
+    )
+
+  return (
+    <View className="flex-1 items-center">
+      <Text className="text-white font-semibold text-lg">
+        {schedules.length}
+      </Text>
+      <Text className="text-white">Scheduled</Text>
+    </View>
+  )
+}
+
 export function UserLodaded({ userId }: { userId: string }) {
   const {
     isLoading,
@@ -450,26 +563,15 @@ export function UserLodaded({ userId }: { userId: string }) {
                       {userRecord.email}
                     </Text>
                   </View>
-                  <View className="flex-row flex-3 mb-3">
-                    <View className="flex-1 items-center">
-                      <Text className="text-white font-semibold text-lg">
-                        123
-                      </Text>
-                      <Text className="text-white">Friends</Text>
-                    </View>
-                    <View className="flex-1 items-center">
-                      <Text className="text-white font-semibold text-lg">
-                        456
-                      </Text>
-                      <Text className="text-white">Watched</Text>
-                    </View>
-                    <View className="flex-1 items-center">
-                      <Text className="text-white font-semibold text-lg">
-                        789
-                      </Text>
-                      <Text className="text-white">Scheduled</Text>
-                    </View>
-                  </View>
+                  <IsAuthenticatedView>
+                    {(user) => (
+                      <View className="flex-row flex-3 mb-3">
+                        <FriendsCount userId={user.uid} />
+                        <WatchedCount userId={user.uid} />
+                        <ScheduledCount userId={user.uid} />
+                      </View>
+                    )}
+                  </IsAuthenticatedView>
                   <View className="flex-row justify-evenly">
                     <ProfileTab
                       isSelected={selectedTab === "WATCHED"}
