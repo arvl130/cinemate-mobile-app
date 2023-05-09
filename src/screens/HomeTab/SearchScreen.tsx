@@ -14,15 +14,10 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { searchMovies } from "../../utils/api"
 import type { Movie } from "tmdb-ts"
 import { GradientBackground } from "../../components/gradient-bg"
+import { AppStackProp } from "../../types/routes"
 
 function SearchResult({ movie }: { movie: MovieListEntry }) {
-  const navigation = useNavigation<
-    NativeStackNavigationProp<{
-      "Movie Details": {
-        id: number
-      }
-    }>
-  >()
+  const navigation = useNavigation<AppStackProp>()
 
   return (
     <>
@@ -32,7 +27,7 @@ function SearchResult({ movie }: { movie: MovieListEntry }) {
         className="[background-color:_#353535] h-24 flex-row mb-2"
         onPress={() => {
           navigation.navigate("Movie Details", {
-            id: movie.id,
+            movieId: movie.id,
           })
         }}
       >
