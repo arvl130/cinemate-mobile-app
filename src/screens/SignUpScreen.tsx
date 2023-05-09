@@ -145,7 +145,7 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
             }
           }}
         />
-        <SignUpWithSocialMedia />
+        {/* <SignUpWithSocialMedia /> */}
       </View>
     </View>
   )

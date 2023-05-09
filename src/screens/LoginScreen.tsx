@@ -90,7 +90,7 @@ function SignInWithSection() {
         </View>
         <View className="bg-white flex-1 h-[1]"></View>
       </View>
-      <View className="mb-6 flex-row justify-center gap-1">
+      <View className="flex-row justify-center gap-1">
         <Image
           className="h-12 w-12"
           source={require("../assets/social-media-icons/facebook.png")}
@@ -106,7 +106,7 @@ function SignInWithSection() {
 
 function NewHereSection({ gotoSignUpFn }: { gotoSignUpFn: () => void }) {
   return (
-    <View className="flex-row gap-1 justify-center px-12">
+    <View className="flex-row gap-1 justify-center mt-6 px-12">
       <Text className="text-white">New here?</Text>
       <TouchableOpacity onPress={gotoSignUpFn} activeOpacity={0.8}>
         <Text className="[color:_#FE6007] underline">Create an account.</Text>
@@ -153,7 +153,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
           navigation.navigate("Forgot Password")
         }}
       />
-      <SignInWithSection />
+      {/* <SignInWithSection /> */}
       <NewHereSection
         gotoSignUpFn={() => {
           navigation.navigate("Sign Up")
