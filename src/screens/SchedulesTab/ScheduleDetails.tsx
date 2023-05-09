@@ -2,11 +2,16 @@ import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native"
 import { GradientBackground } from "../../components/gradient-bg"
 import { IsAuthenticatedView } from "../../components/is-authenticated"
 import {
+  addWatchedMovie,
   editSchedule,
   getMovieDetails,
   getMovieReview,
+  getSavedMovies,
   getSchedule,
   getUserProfile,
+  getWatchedMovies,
+  getWatchlistMovies,
+  removeWatchlistMovie,
 } from "../../utils/api"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { Schedule, ScheduleInvite } from "../../types/schedule"
@@ -70,10 +75,11 @@ function TopActionButtons({
 }) {
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  const { refetch } = useQuery({
+  const { refetch: refetchSchedule } = useQuery({
     queryKey: ["getSchedule", schedule.userId, schedule.isoDate],
     queryFn: () => getSchedule(schedule.userId, schedule.isoDate),
   })
+
   const { mutate: doEditSchedule } = useMutation({
     mutationKey: ["editSchedule", schedule.userId, schedule.isoDate],
     mutationFn: () =>
@@ -88,7 +94,51 @@ function TopActionButtons({
           (scheduleInvite) => scheduleInvite.friendId
         ),
       }),
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      refetchSchedule()
+      doRemoveWatchlistMovie({
+        userId: schedule.userId,
+        movieId: schedule.movieId,
+      })
+    },
+  })
+
+  const { refetch: refetchWatchlistMovies } = useQuery({
+    queryKey: ["getWatchlistMovies", schedule.userId],
+    queryFn: () => getWatchlistMovies(schedule.userId),
+  })
+
+  const { mutate: doRemoveWatchlistMovie } = useMutation({
+    mutationKey: ["removeWatchlistMovie", schedule.userId, schedule.movieId],
+    mutationFn: (values: { userId: string; movieId: number }) =>
+      removeWatchlistMovie(values.userId, values.movieId),
+    onSuccess: () => {
+      refetchWatchlistMovies()
+      doAddWatchedMovie({
+        userId: schedule.userId,
+        movieId: schedule.movieId,
+      })
+    },
+  })
+
+  const { refetch: refetchWatchedMovies } = useQuery({
+    queryKey: ["getWatchedMovies", schedule.userId],
+    queryFn: () => getWatchedMovies(schedule.userId),
+  })
+
+  const { refetch: refetchSavedMovies } = useQuery({
+    queryKey: ["getSavedMovies", schedule.userId],
+    queryFn: () => getSavedMovies(schedule.userId),
+  })
+
+  const { mutate: doAddWatchedMovie } = useMutation({
+    mutationKey: ["addWatchedMovie", schedule.userId, schedule.movieId],
+    mutationFn: (values: { userId: string; movieId: number }) =>
+      addWatchedMovie(values.userId, values.movieId),
+    onSuccess: () => {
+      refetchWatchedMovies()
+      refetchSavedMovies()
+    },
   })
 
   const {
