@@ -1,4 +1,3 @@
-import { LinearGradient } from "expo-linear-gradient"
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
 import {
   addWatchedMovie,
@@ -6,6 +5,7 @@ import {
   getMovieDetails,
   getMovieReviews,
   getSavedMovies,
+  getSchedules,
   getUserProfile,
   getWatchedMovies,
   removeWatchedMovie,
@@ -68,6 +68,63 @@ function ShortInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   )
 }
 
+function ScheduleButton({
+  userId,
+  movieId,
+}: {
+  userId: string
+  movieId: number
+}) {
+  const {
+    isLoading,
+    isError,
+    data: schedules,
+    refetch,
+  } = useQuery({
+    queryKey: ["getSchedules", userId],
+    queryFn: () => getSchedules(userId),
+  })
+  useRefreshOnFocus(refetch)
+  const navigation = useNavigation<AppStackProp>()
+
+  if (isLoading) return <Text className="text-white">...</Text>
+  if (isError) return <Text className="text-red-500">error</Text>
+
+  const pendingScheduleForThisMovie = schedules.find((schedule) => {
+    if (schedule.isPending && schedule.movieId === movieId) return true
+    return false
+  })
+
+  if (pendingScheduleForThisMovie)
+    return (
+      <TouchableOpacity
+        activeOpacity={0.8}
+        className="border-2 bg-gray-100 rounded-md"
+        onPress={() => {
+          navigation.navigate("Schedule Details", {
+            isoDate: pendingScheduleForThisMovie.isoDate,
+          })
+        }}
+      >
+        <Text className="text-center py-3 font-medium">View Schedule</Text>
+      </TouchableOpacity>
+    )
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      className="border-2 bg-gray-100 rounded-md"
+      onPress={() => {
+        navigation.navigate("Create Schedule", {
+          movieId,
+        })
+      }}
+    >
+      <Text className="text-center py-3 font-medium">Schedule</Text>
+    </TouchableOpacity>
+  )
+}
+
 function SaveButtons({ userId, movieId }: { userId: string; movieId: number }) {
   const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["savedMovies", userId],
@@ -110,8 +167,6 @@ function SaveButtons({ userId, movieId }: { userId: string; movieId: number }) {
       removeWatchlistMovie(values.userId, values.movieId),
     onSuccess: () => refetch(),
   })
-
-  const navigation = useNavigation<AppStackProp>()
 
   if (isLoading)
     return (
@@ -177,17 +232,7 @@ function SaveButtons({ userId, movieId }: { userId: string; movieId: number }) {
   if (savedMovieFound.watchStatus === "WatchList")
     return (
       <>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          className="border-2 bg-gray-100 rounded-md"
-          onPress={() => {
-            navigation.navigate("Create Schedule", {
-              movieId,
-            })
-          }}
-        >
-          <Text className="text-center py-3 font-medium">Schedule</Text>
-        </TouchableOpacity>
+        <ScheduleButton userId={userId} movieId={movieId} />
         <TouchableOpacity
           activeOpacity={0.6}
           className="border-2 border-red-500 bg-red-500 rounded-md mt-3"
