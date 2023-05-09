@@ -335,6 +335,7 @@ export async function editSchedule(values: {
   newIsoDate: string
   movieId: number
   invitedFriendIds: string[]
+  isPending: boolean
 }) {
   const response = await fetch(
     `${backendBaseUrl}/user/${values.userId}/schedule/${values.isoDate}`,
@@ -347,6 +348,7 @@ export async function editSchedule(values: {
         isoDate: values.newIsoDate,
         movieId: values.movieId,
         invitedFriendIds: values.invitedFriendIds,
+        isPending: values.isPending,
       }),
     }
   )

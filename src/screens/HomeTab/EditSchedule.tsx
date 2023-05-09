@@ -274,11 +274,13 @@ function EditForm({
   initialDate,
   initialSelectedFriends,
   userId,
+  isPending,
 }: {
   movieId: number
   initialDate: Date
   initialSelectedFriends: string[]
   userId: string
+  isPending: boolean
 }) {
   const [selectedDate, setSelectedDate] = useState(initialDate)
   const [selectedTime, setSelectedTime] = useState(initialDate)
@@ -320,6 +322,7 @@ function EditForm({
       newIsoDate: string
       movieId: number
       invitedFriendIds: string[]
+      isPending: boolean
     }) => editSchedule(values),
     onSuccess: () => {
       navigation.navigate("Authenticated Tabs", {
@@ -426,6 +429,7 @@ function EditForm({
               newIsoDate: formData.isoDate,
               movieId: formData.movieId,
               userId,
+              isPending,
             })
           })}
           activeOpacity={0.6}
@@ -475,6 +479,7 @@ function UserLoaded({
       initialSelectedFriends={schedule.scheduleInvites.map(
         (scheduleInvite) => scheduleInvite.friendId
       )}
+      isPending={schedule.isPending}
     />
   )
 }
