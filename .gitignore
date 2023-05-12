@@ -17,4 +17,4 @@ web-build/
 .metro-health-check*
 
 # API keys
-app.config.js
+.env
