@@ -1,3 +1,5 @@
+require("dotenv").config()
+
 module.exports = {
   name: "MyApp",
   version: "1.0.0",
@@ -13,5 +15,6 @@ module.exports = {
     backendBaseUrl: process.env.BACKEND_BASE_URL,
     nativeNotifyAppId: process.env.NATIVE_NOTIFY_APP_ID,
     nativeNotifyAppToken: process.env.NATIVE_NOTIFY_APP_TOKEN,
+    tmdbAccessToken: process.env.TMDB_ACCESS_TOKEN,
   },
 }
