@@ -3,7 +3,13 @@ require("dotenv").config()
 module.exports = {
   name: "Cinemate",
   version: "1.0.0",
+  android: {
+    package: "com.ageulin.cinemate",
+  },
   extra: {
+    eas: {
+      projectId: "a33dbfc2-6503-46a8-b7d8-04b75aae200d",
+    },
     firebaseConfig: {
       apiKey: process.env.FIREBASE_API_KEY,
       authDomain: process.env.FIREBASE_AUTH_DOMAIN,
