@@ -1,7 +1,7 @@
 require("dotenv").config()
 
 module.exports = {
-  name: "MyApp",
+  name: "Cinemate",
   version: "1.0.0",
   extra: {
     firebaseConfig: {
