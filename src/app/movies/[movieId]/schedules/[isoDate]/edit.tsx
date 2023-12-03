@@ -179,7 +179,7 @@ function FriendsPickerItem({
         ) : (
           <Image
             className="w-full h-full rounded-full"
-            source={require("../../../../../assets/no-photo-url.jpg")}
+            source={require("../../../../../../assets/no-photo-url.jpg")}
           />
         )}
       </View>

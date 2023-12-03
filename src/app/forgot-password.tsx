@@ -17,7 +17,7 @@ function AppName() {
     <View className="flex-row justify-center gap-3 mt-8 items-end">
       <Image
         className="h-20 w-20"
-        source={require("../assets/cinemate-logo.png")}
+        source={require("../../assets/cinemate-logo.png")}
       ></Image>
       <Text
         className="text-white mb-3 text-3xl"
@@ -34,7 +34,7 @@ export default function ForgotPasswordScreen() {
   return (
     <View className="flex-1 relative">
       <ImageBackground
-        source={require("../assets/forgot-pass/bg.jpg")}
+        source={require("../../assets/forgot-pass/bg.jpg")}
         resizeMode={"cover"}
         className="absolute left-0 right-0 top-0 bottom-0"
         style={{
@@ -49,7 +49,7 @@ export default function ForgotPasswordScreen() {
           <View className="flex-row justify-center gap-3 mb-6 mt-6 items-end">
             <Image
               className="h-24 w-24"
-              source={require("../assets/forgot-pass/lock-icon.png")}
+              source={require("../../assets/forgot-pass/lock-icon.png")}
             ></Image>
           </View>
           <Text className="text-white text-2xl text-center font-semibold">

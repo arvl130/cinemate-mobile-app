@@ -349,7 +349,7 @@ function ReviewSectionItem({
           {data === undefined ? (
             <Image
               className="w-full h-full rounded-full"
-              source={require("../../../assets/no-photo-url.jpg")}
+              source={require("../../../../assets/no-photo-url.jpg")}
             />
           ) : (
             <>
@@ -363,7 +363,7 @@ function ReviewSectionItem({
               ) : (
                 <Image
                   className="w-full h-full rounded-full"
-                  source={require("../../../assets/no-photo-url.jpg")}
+                  source={require("../../../../assets/no-photo-url.jpg")}
                 />
               )}
             </>

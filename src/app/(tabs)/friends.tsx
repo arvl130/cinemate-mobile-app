@@ -94,7 +94,7 @@ function FriendsSectionItem({
           ) : (
             <Image
               className="w-full h-full rounded-full"
-              source={require("../../assets/no-photo-url.jpg")}
+              source={require("../../../assets/no-photo-url.jpg")}
             />
           )}
         </View>
@@ -132,7 +132,7 @@ function FriendsSectionItem({
               ) : (
                 <Image
                   className="w-full h-full rounded-full"
-                  source={require("../../assets/no-photo-url.jpg")}
+                  source={require("../../../assets/no-photo-url.jpg")}
                 />
               )}
             </View>
@@ -240,7 +240,7 @@ export default function FriendsScreen() {
           <View className="flex-row justify-center items-center gap-3 mt-3 mb-6">
             <Image
               className="h-12 w-12"
-              source={require("../../assets/cinemate-logo.png")}
+              source={require("../../../assets/cinemate-logo.png")}
             />
             <Text
               className="text-white text-center text-2xl"

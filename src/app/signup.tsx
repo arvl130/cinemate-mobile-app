@@ -19,7 +19,7 @@ function AppName() {
     <View className="flex-row justify-center gap-3 mb-12 mt-12 items-end">
       <Image
         className="h-20 w-20"
-        source={require("../assets/cinemate-logo.png")}
+        source={require("../../assets/cinemate-logo.png")}
       ></Image>
       <Text
         className="text-white mb-3 text-3xl"
@@ -94,11 +94,11 @@ function SignUpWithSocialMedia() {
       <View className="flex-row justify-center">
         <Image
           className="h-12 w-12"
-          source={require("../assets/social-media-icons/facebook.png")}
+          source={require("../../assets/social-media-icons/facebook.png")}
         ></Image>
         <Image
           className="h-12 w-12"
-          source={require("../assets/social-media-icons/google.png")}
+          source={require("../../assets/social-media-icons/google.png")}
         ></Image>
       </View>
     </View>
@@ -114,7 +114,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   return (
     <View className="flex-1 relative">
       <ImageBackground
-        source={require("../assets/login-background.jpg")}
+        source={require("../../assets/login-background.jpg")}
         resizeMode={"cover"}
         className="absolute left-0 right-0 top-0 bottom-0"
         style={{
