@@ -229,7 +229,7 @@ function FriendsSection({ userId }: { userId: string }) {
   )
 }
 
-export function FriendsScreen() {
+export default function FriendsScreen() {
   const navigation = useNavigation<AppStackProp>()
 
   return (

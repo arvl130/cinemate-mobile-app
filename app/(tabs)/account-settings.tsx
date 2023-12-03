@@ -638,7 +638,7 @@ function LogoutButton() {
   )
 }
 
-export function AccountSettingsScreen() {
+export default function AccountSettingsScreen() {
   return (
     <SafeAreaView>
       <GradientBackground />

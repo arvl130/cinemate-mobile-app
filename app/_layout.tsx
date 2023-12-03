@@ -10,7 +10,7 @@ import registerNNPushToken from "native-notify"
 import Constants from "expo-constants"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { AuthStateProvider } from "../src/firebase"
-import { Slot } from "expo-router"
+import { Slot, Stack } from "expo-router"
 
 const queryClient = new QueryClient()
 
@@ -33,7 +33,14 @@ export default function Layout() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaView className="h-full bg-black">
         <AuthStateProvider>
-          <Slot />
+          <Stack>
+            <Stack.Screen
+              name="(tabs)"
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack>
         </AuthStateProvider>
       </SafeAreaView>
     </QueryClientProvider>

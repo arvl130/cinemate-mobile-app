@@ -179,7 +179,7 @@ function SchedulesSection({ userId }: { userId: string }) {
   )
 }
 
-export function SchedulesScreen() {
+export default function SchedulesScreen() {
   return (
     <SafeAreaView className="flex-1">
       <View>
