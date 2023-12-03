@@ -1,7 +1,33 @@
-import { Tabs } from "expo-router"
+import { Redirect, Tabs } from "expo-router"
 import { Entypo, Ionicons, FontAwesome5 } from "@expo/vector-icons"
+import { useAuthState } from "../../src/firebase"
+import { View } from "react-native"
 
 export default function Layout() {
+  const { isLoading, isAuthenticated } = useAuthState()
+
+  if (isLoading)
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "black",
+        }}
+      ></View>
+    )
+
+  if (!isAuthenticated)
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "black",
+        }}
+      >
+        <Redirect href={"/login"} />
+      </View>
+    )
+
   return (
     <Tabs
       screenOptions={{

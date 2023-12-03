@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native"
 import { LinearGradient } from "expo-linear-gradient"
 import {
   Image,
@@ -15,20 +14,21 @@ import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { UserRecord } from "../../src/types/user"
-import { AppStackProp } from "../../src/types/routes"
 import { GradientBackground } from "../../src/components/gradient-bg"
+import { router } from "expo-router"
 
 function SearchResult({ userRecord }: { userRecord: UserRecord }) {
-  const navigation = useNavigation<AppStackProp>()
-
   return (
     <>
       <TouchableOpacity
         activeOpacity={0.8}
         className="[background-color:_#353535] h-24 flex-row mb-2 px-3"
         onPress={() =>
-          navigation.push("Friend Profile", {
-            friendId: userRecord.uid,
+          router.push({
+            pathname: "/friends/[friendId]/profile",
+            params: {
+              friendId: userRecord.uid,
+            },
           })
         }
       >
@@ -115,7 +115,7 @@ const formSchema = z.object({
 
 type FormType = z.infer<typeof formSchema>
 
-export function SearchFriendsScreen() {
+export default function SearchFriendsScreen() {
   const [query, setQuery] = useState("")
   const { isLoading, isError, data } = useQuery({
     queryKey: ["searchFriends", query],

@@ -12,22 +12,19 @@ import {
 import { Text, Image } from "react-native"
 import Modal from "react-native-modal"
 import { ReactNode, useEffect, useState } from "react"
-import { useNavigation } from "@react-navigation/native"
-import { AppStackProp } from "../../src/types/routes"
 import { IsAuthenticatedView } from "../../src/components/is-authenticated"
 import { Review } from "../../src/types/review"
 import { Entypo, Ionicons } from "@expo/vector-icons"
 import { GradientBackground } from "../../src/components/gradient-bg"
 import { useRefreshOnFocus } from "../../src/utils/refresh-on-focus"
 import { HamburgerMenu } from "../../src/components/hamburger-menu"
+import { router, useNavigation } from "expo-router"
 
 function MovieItem({ movieId }: { movieId: number }) {
   const { isLoading, isError, data } = useQuery({
     queryKey: ["movieDetails", movieId],
     queryFn: () => getMovieDetails(movieId),
   })
-
-  const navigation = useNavigation<AppStackProp>()
 
   if (isLoading) return <Text className="text-white text-center">...</Text>
   if (isError) return <Text className="text-red-500 text-center">Error</Text>
@@ -43,8 +40,11 @@ function MovieItem({ movieId }: { movieId: number }) {
       <TouchableOpacity
         activeOpacity={0.5}
         onPress={() => {
-          navigation.navigate("Movie Details", {
-            movieId,
+          router.push({
+            pathname: "/movies/[movieId]/details",
+            params: {
+              movieId,
+            },
           })
         }}
       >
@@ -342,8 +342,6 @@ function OtherSettingsModal({
   isVisible: boolean
   closeFn: () => void
 }) {
-  const navigation = useNavigation<AppStackProp>()
-
   return (
     <Modal
       isVisible={isVisible}
@@ -361,7 +359,7 @@ function OtherSettingsModal({
           <TouchableOpacity
             className="py-3"
             onPress={() => {
-              navigation.push("Account Settings")
+              router.push("/account-settings")
               closeFn()
             }}
           >
@@ -370,7 +368,7 @@ function OtherSettingsModal({
           <TouchableOpacity
             className="py-3"
             onPress={() => {
-              navigation.push("Blocked Users")
+              router.push("/account-settings/blocked-users")
               closeFn()
             }}
           >
@@ -622,7 +620,7 @@ export function UserLodaded({ userId }: { userId: string }) {
   )
 }
 
-export function MyProfileScreen({ route }: any) {
+export default function MyProfileScreen({ route }: any) {
   return (
     <IsAuthenticatedView>
       {(user) => <UserLodaded userId={user.uid} />}

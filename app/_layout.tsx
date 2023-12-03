@@ -10,7 +10,8 @@ import registerNNPushToken from "native-notify"
 import Constants from "expo-constants"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { AuthStateProvider } from "../src/firebase"
-import { Slot, Stack } from "expo-router"
+import { Stack } from "expo-router"
+import { StatusBar } from "expo-status-bar"
 
 const queryClient = new QueryClient()
 
@@ -33,13 +34,27 @@ export default function Layout() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaView className="h-full bg-black">
         <AuthStateProvider>
-          <Stack>
-            <Stack.Screen
-              name="(tabs)"
-              options={{
-                headerShown: false,
-              }}
-            />
+          <StatusBar style="light" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="login" />
+            <Stack.Screen name="signup" />
+            <Stack.Screen name="account-settings/profile" />
+            <Stack.Screen name="account-settings/blocked-users" />
+            <Stack.Screen name="friends/[friendId]/profile" />
+            <Stack.Screen name="friends/search" />
+            <Stack.Screen name="movies/[movieId]/review/create" />
+            <Stack.Screen name="movies/[movieId]/review/edit" />
+            <Stack.Screen name="movies/[movieId]/schedules/create" />
+            <Stack.Screen name="movies/[movieId]/schedules/[isoDate]/edit" />
+            <Stack.Screen name="movies/[movieId]/details" />
+            <Stack.Screen name="movies/ask" />
+            <Stack.Screen name="movies/search" />
+            <Stack.Screen name="schedules/[isoDate]" />
           </Stack>
         </AuthStateProvider>
       </SafeAreaView>

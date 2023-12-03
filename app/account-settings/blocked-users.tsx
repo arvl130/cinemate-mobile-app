@@ -127,7 +127,7 @@ function MainContent({ user }: { user: User }) {
   )
 }
 
-export function BlockedUsersScreen() {
+export default function BlockedUsersScreen() {
   return (
     <View className="flex-1">
       <GradientBackground />

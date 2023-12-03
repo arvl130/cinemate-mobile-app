@@ -110,7 +110,7 @@ type SignUpScreenProps = NativeStackScreenProps<{
   "Sign Up": undefined
 }>
 
-export function SignUpScreen({ navigation }: SignUpScreenProps) {
+export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   return (
     <View className="flex-1 relative">
       <ImageBackground

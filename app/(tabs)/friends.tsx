@@ -19,11 +19,10 @@ import {
   getUserProfile,
   removeFriend,
 } from "../../src/utils/api"
-import { useNavigation } from "@react-navigation/native"
-import { AppStackProp } from "../../src/types/routes"
 import { IsAuthenticatedView } from "../../src/components/is-authenticated"
 import { useState } from "react"
 import { GradientBackground } from "../../src/components/gradient-bg"
+import { router } from "expo-router"
 
 function FriendsSectionItem({
   userId,
@@ -37,7 +36,6 @@ function FriendsSectionItem({
     queryFn: () => getUserProfile(friendId),
   })
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const navigation = useNavigation<AppStackProp>()
 
   const { refetch } = useQuery({
     queryKey: ["getFriends", userId],
@@ -145,8 +143,11 @@ function FriendsSectionItem({
               className="py-3"
               onPress={() => {
                 setIsModalVisible(false)
-                navigation.push("Friend Profile", {
-                  friendId,
+                router.push({
+                  pathname: "/friends/[friendId]/profile",
+                  params: {
+                    friendId,
+                  },
                 })
               }}
             >
@@ -230,8 +231,6 @@ function FriendsSection({ userId }: { userId: string }) {
 }
 
 export default function FriendsScreen() {
-  const navigation = useNavigation<AppStackProp>()
-
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -256,7 +255,7 @@ export default function FriendsScreen() {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => {
-                navigation.navigate("Search Friends")
+                router.push("/friends/search")
               }}
             >
               <LinearGradient

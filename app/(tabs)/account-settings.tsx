@@ -611,7 +611,7 @@ function LogoutButton() {
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   return (
-    <View className="mt-6">
+    <View className="mt-6 bg-black">
       <TouchableOpacity
         onPress={async () => {
           setIsSigningOut(true)

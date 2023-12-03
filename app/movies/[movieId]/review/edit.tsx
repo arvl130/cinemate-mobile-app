@@ -9,13 +9,12 @@ import {
   editMovieReview,
   getMovieReview,
 } from "../../../../src/utils/api"
-import { useNavigation } from "@react-navigation/native"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { IsAuthenticatedView } from "../../../../src/components/is-authenticated"
 import { User } from "firebase/auth"
 import { useQuery } from "@tanstack/react-query"
 import { Review } from "../../../../src/types/review"
 import { GradientBackground } from "../../../../src/components/gradient-bg"
+import { router, useLocalSearchParams } from "expo-router"
 
 const formSchema = z.object({
   details: z.string().min(1),
@@ -60,7 +59,6 @@ function EditReviewForm({
   })
 
   const queryClient = useQueryClient()
-  const navigation = useNavigation<NativeStackNavigationProp<{}>>()
 
   const { mutate: doDeleteMovieReview } = useMutation({
     mutationKey: ["deleteReview", movieId],
@@ -69,7 +67,7 @@ function EditReviewForm({
       queryClient.invalidateQueries({
         queryKey: ["reviewDetails", movieId, review.userId],
       })
-      navigation.goBack()
+      router.back()
     },
   })
 
@@ -81,7 +79,7 @@ function EditReviewForm({
       queryClient.invalidateQueries({
         queryKey: ["reviewDetails", movieId, review.userId],
       })
-      navigation.goBack()
+      router.back()
     },
   })
 
@@ -192,12 +190,12 @@ function AuthenticatedView({ user, movieId }: { user: User; movieId: number }) {
   return <EditReviewForm movieId={movieId} review={data} />
 }
 
-export function EditReviewScreen({ route }: any) {
-  const { movieId } = route.params
+export default function EditReviewScreen() {
+  const { movieId } = useLocalSearchParams<{ movieId: string }>()
 
   return (
     <IsAuthenticatedView>
-      {(user) => <AuthenticatedView user={user} movieId={movieId} />}
+      {(user) => <AuthenticatedView user={user} movieId={Number(movieId)} />}
     </IsAuthenticatedView>
   )
 }

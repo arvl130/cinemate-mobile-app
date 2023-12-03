@@ -21,6 +21,7 @@ import {
 } from "../../src/utils/api"
 import { Movie, MovieDetails } from "tmdb-ts"
 import { useRefreshOnFocus } from "../../src/utils/refresh-on-focus"
+import { router } from "expo-router"
 
 function SearchSection() {
   const navigation = useNavigation<AppStackProp>()
@@ -45,7 +46,7 @@ function SearchSection() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
-            navigation.navigate("Search Movies")
+            router.push("/movies/search")
           }}
         >
           <LinearGradient
@@ -64,14 +65,15 @@ function SearchSection() {
 }
 
 function TrendingSectionItem({ movie }: { movie: Movie }) {
-  const navigation = useNavigation<AppStackProp>()
-
   return (
     <TouchableOpacity
       activeOpacity={0.6}
       onPress={() => {
-        navigation.navigate("Movie Details", {
-          movieId: movie.id,
+        router.push({
+          pathname: "/movies/[movieId]/details",
+          params: {
+            movieId: movie.id,
+          },
         })
       }}
     >
@@ -222,13 +224,14 @@ const FOR_YOU_DATA: Array<MovieListEntry> = [
 ]
 
 function ForYouSectionItem({ movie }: { movie: Movie }) {
-  const navigation = useNavigation<AppStackProp>()
-
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Movie Details", {
-          movieId: movie.id,
+        router.push({
+          pathname: "/movies/[movieId]/details",
+          params: {
+            movieId: movie.id,
+          },
         })
       }}
       activeOpacity={0.6}
@@ -285,7 +288,7 @@ function ForYouSection() {
         <TouchableOpacity
           activeOpacity={0.4}
           className="border border-blue-500 py-1 px-2 rounded-md font-medium"
-          onPress={() => navigation.navigate("Ask ChatGPT")}
+          onPress={() => router.push("/movies/ask")}
         >
           <Text className="text-blue-500">Ask ChatGPT</Text>
         </TouchableOpacity>

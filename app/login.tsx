@@ -8,10 +8,10 @@ import {
   Alert,
 } from "react-native"
 import { Dimensions } from "react-native"
-import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "../src/firebase"
 import { useState } from "react"
+import { router } from "expo-router"
 
 function AppName() {
   return (
@@ -72,6 +72,7 @@ function SignInForm({
           try {
             await signInWithEmailAndPassword(auth, email, password)
             setEmail("")
+            router.push("/(tabs)")
           } catch {
             Alert.alert(
               "Invalid",
@@ -134,17 +135,10 @@ function NewHereSection({ gotoSignUpFn }: { gotoSignUpFn: () => void }) {
   )
 }
 
-type LoginScreenProps = NativeStackScreenProps<{
-  Login: undefined
-  "Sign Up": undefined
-  "Authenticated Tabs": undefined
-  "Forgot Password": undefined
-}>
-
-export function LoginScreen({ navigation }: LoginScreenProps) {
+export default function LoginScreen() {
   const { height } = Dimensions.get("window")
   return (
-    <View className="flex-1 relative">
+    <View className="flex-1 relative bg-black">
       <ImageBackground
         source={require("../assets/login-background.jpg")}
         resizeMode={"cover"}
@@ -159,13 +153,13 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
       <AppName />
       <SignInForm
         onForgotPasswordFn={() => {
-          navigation.navigate("Forgot Password")
+          router.push("/forgot-password")
         }}
       />
       {/* <SignInWithSection /> */}
       <NewHereSection
         gotoSignUpFn={() => {
-          navigation.navigate("Sign Up")
+          router.push("/signup")
         }}
       />
     </View>

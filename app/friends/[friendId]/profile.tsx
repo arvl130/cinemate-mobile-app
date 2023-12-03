@@ -14,7 +14,6 @@ import {
 import { Text, Image } from "react-native"
 import Modal from "react-native-modal"
 import { ReactNode, useEffect, useState } from "react"
-import { useNavigation } from "@react-navigation/native"
 import { AppStackProp } from "../../../src/types/routes"
 import { IsAuthenticatedView } from "../../../src/components/is-authenticated"
 import { getFriends } from "../../../src/utils/api"
@@ -25,14 +24,13 @@ import { useRefreshOnFocus } from "../../../src/utils/refresh-on-focus"
 import { HamburgerMenu } from "../../../src/components/hamburger-menu"
 import { getBlockedUsers } from "../../../src/utils/api"
 import { addBlockedUser } from "../../../src/utils/api"
+import { router, useLocalSearchParams, useNavigation } from "expo-router"
 
 function MovieItem({ movieId }: { movieId: number }) {
   const { isLoading, isError, data } = useQuery({
     queryKey: ["movieDetails", movieId],
     queryFn: () => getMovieDetails(movieId),
   })
-
-  const navigation = useNavigation<AppStackProp>()
 
   if (isLoading) return <Text className="text-white text-center">...</Text>
   if (isError) return <Text className="text-red-500 text-center">Error</Text>
@@ -48,8 +46,11 @@ function MovieItem({ movieId }: { movieId: number }) {
       <TouchableOpacity
         activeOpacity={0.5}
         onPress={() => {
-          navigation.navigate("Movie Details", {
-            movieId,
+          router.push({
+            pathname: "/movies/[movieId]/details",
+            params: {
+              movieId,
+            },
           })
         }}
       >
@@ -449,8 +450,6 @@ function OtherActionsModal({
     onSuccess: () => refetchBlockedUsers(),
   })
 
-  const navigation = useNavigation<AppStackProp>()
-
   return (
     <Modal
       isVisible={isVisible}
@@ -479,9 +478,7 @@ function OtherActionsModal({
             onPress={() => {
               doAddBlockedUser()
               closeFn()
-              navigation.navigate("Authenticated Tabs", {
-                screen: "Friends Tab",
-              })
+              router.replace("/friends")
             }}
           >
             <Text className="text-white">Block User</Text>
@@ -604,8 +601,8 @@ function ScheduledCount({ userId }: { userId: string }) {
   )
 }
 
-export function FriendProfileScreen({ route }: any) {
-  const { friendId } = route.params
+export default function FriendProfileScreen() {
+  const { friendId } = useLocalSearchParams<{ friendId: string }>()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const navigation = useNavigation()

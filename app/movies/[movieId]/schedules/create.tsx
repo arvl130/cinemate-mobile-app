@@ -20,9 +20,9 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DateTime } from "luxon"
-import { useNavigation } from "@react-navigation/native"
 import { AppStackProp } from "../../../../src/types/routes"
 import * as Notifications from "expo-notifications"
+import { router, useLocalSearchParams } from "expo-router"
 
 function DatePicker({
   selectedDate,
@@ -275,8 +275,8 @@ const formSchema = z.object({
 
 type FormType = z.infer<typeof formSchema>
 
-export function CreateScheduleScreen({ route }: any) {
-  const { movieId } = route.params
+export default function CreateScheduleScreen() {
+  const { movieId } = useLocalSearchParams<{ movieId: string }>()
 
   const currentDate = new Date()
   const [selectedDate, setSelectedDate] = useState(currentDate)
@@ -291,7 +291,7 @@ export function CreateScheduleScreen({ route }: any) {
   } = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      movieId,
+      movieId: Number(movieId),
       invitedFriendIds: [],
       isoDate:
         DateTime.fromObject(
@@ -308,7 +308,6 @@ export function CreateScheduleScreen({ route }: any) {
         ).toISO() ?? undefined,
     },
   })
-  const navigation = useNavigation<AppStackProp>()
 
   return (
     <IsAuthenticatedView>
@@ -385,7 +384,7 @@ export function CreateScheduleScreen({ route }: any) {
                   notificationId,
                 })
                 ToastAndroid.show("Scheduled successfully.", ToastAndroid.SHORT)
-                navigation.goBack()
+                router.back()
               })}
               activeOpacity={0.6}
               className="bg-white rounded-md font-medium mb-6"

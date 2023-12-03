@@ -5,9 +5,8 @@ import { z } from "zod"
 import { Entypo } from "@expo/vector-icons"
 import { useMutation } from "@tanstack/react-query"
 import { createMovieReview } from "../../../../src/utils/api"
-import { useNavigation } from "@react-navigation/native"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { GradientBackground } from "../../../../src/components/gradient-bg"
+import { router, useLocalSearchParams } from "expo-router"
 
 const formSchema = z.object({
   details: z.string().min(1),
@@ -30,8 +29,8 @@ function StarButton({
   )
 }
 
-export function CreateReviewScreen({ route }: any) {
-  const { movieId } = route.params
+export default function CreateReviewScreen() {
+  const { movieId } = useLocalSearchParams<{ movieId: string }>()
   const {
     control,
     handleSubmit,
@@ -48,10 +47,9 @@ export function CreateReviewScreen({ route }: any) {
   const { mutate } = useMutation({
     mutationKey: ["createReview", movieId],
     mutationFn: ({ details, rating }: { details: string; rating: number }) =>
-      createMovieReview(movieId, details, rating),
-    onSuccess: () => navigation.goBack(),
+      createMovieReview(Number(movieId), details, rating),
+    onSuccess: () => router.back(),
   })
-  const navigation = useNavigation<NativeStackNavigationProp<{}>>()
 
   return (
     <View className="flex-1">

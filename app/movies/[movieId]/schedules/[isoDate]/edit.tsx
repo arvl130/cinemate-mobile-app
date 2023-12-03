@@ -28,6 +28,7 @@ import {
   cancelScheduledNotificationAsync,
   scheduleNotificationAsync,
 } from "expo-notifications"
+import { router, useLocalSearchParams } from "expo-router"
 
 function DatePicker({
   selectedDate,
@@ -350,9 +351,7 @@ function EditForm({
     },
     onSuccess: () => {
       ToastAndroid.show("Edited successfully.", ToastAndroid.SHORT)
-      navigation.navigate("Authenticated Tabs", {
-        screen: "Schedules Tab",
-      })
+      router.replace("/(tabs)/schedules")
     },
   })
 
@@ -363,9 +362,7 @@ function EditForm({
     onSuccess: async () => {
       await cancelScheduledNotificationAsync(notificationId)
       ToastAndroid.show("Schedule deleted.", ToastAndroid.SHORT)
-      navigation.navigate("Authenticated Tabs", {
-        screen: "Schedules Tab",
-      })
+      router.replace("/(tabs)/schedules")
     },
   })
 
@@ -513,13 +510,20 @@ function UserLoaded({
   )
 }
 
-export function EditScheduleScreen({ route }: any) {
-  const { movieId, isoDate } = route.params
+export default function EditScheduleScreen() {
+  const { movieId, isoDate } = useLocalSearchParams<{
+    movieId: string
+    isoDate: string
+  }>()
 
   return (
     <IsAuthenticatedView>
       {(user) => (
-        <UserLoaded userId={user.uid} movieId={movieId} isoDate={isoDate} />
+        <UserLoaded
+          userId={user.uid}
+          movieId={Number(movieId)}
+          isoDate={isoDate}
+        />
       )}
     </IsAuthenticatedView>
   )

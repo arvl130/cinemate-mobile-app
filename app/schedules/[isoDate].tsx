@@ -16,11 +16,10 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { Schedule, ScheduleInvite } from "../../src/types/schedule"
 import { MovieDetails } from "tmdb-ts"
-import { AppStackProp } from "../../src/types/routes"
-import { useNavigation } from "@react-navigation/native"
 import Modal from "react-native-modal"
 import { useState } from "react"
 import { useRefreshOnFocus } from "../../src/utils/refresh-on-focus"
+import { router, useLocalSearchParams } from "expo-router"
 
 function ScheduleDoneConfirmationModal({
   isVisible,
@@ -151,7 +150,6 @@ function TopActionButtons({
     queryFn: () => getMovieReview(schedule.movieId, schedule.userId),
   })
   useRefreshOnFocus(refetchReview)
-  const navigation = useNavigation<AppStackProp>()
 
   if (schedule.isPending)
     return (
@@ -198,8 +196,11 @@ function TopActionButtons({
           activeOpacity={0.6}
           className="border [border-color:_#FE6007] rounded-md py-1"
           onPress={() =>
-            navigation.navigate("Create Review", {
-              movieId: schedule.movieId,
+            router.push({
+              pathname: "/movies/[movieId]/review/create",
+              params: {
+                movieId: schedule.movieId,
+              },
             })
           }
         >
@@ -213,8 +214,11 @@ function TopActionButtons({
         activeOpacity={0.6}
         className="border [border-color:_#FE6007] rounded-md py-1"
         onPress={() =>
-          navigation.navigate("Edit Review", {
-            movieId: schedule.movieId,
+          router.push({
+            pathname: "/movies/[movieId]/review/edit",
+            params: {
+              movieId: schedule.movieId,
+            },
           })
         }
       >
@@ -286,7 +290,6 @@ function DateAndTimeSection({ schedule }: { schedule: Schedule }) {
 
     return `${date.getFullYear()}-${month}-${day} ${hours}:${minutes}`
   }
-  const navigation = useNavigation<AppStackProp>()
 
   return (
     <View className="flex-row flex-1 border-b border-gray-400 pb-2">
@@ -300,9 +303,12 @@ function DateAndTimeSection({ schedule }: { schedule: Schedule }) {
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={() => {
-            navigation.push("Edit Schedule", {
-              isoDate: schedule.isoDate,
-              movieId: schedule.movieId,
+            router.push({
+              pathname: "/schedules/[isoDate]",
+              params: {
+                isoDate: schedule.isoDate,
+                movieId: schedule.movieId,
+              },
             })
           }}
         >
@@ -454,8 +460,9 @@ function AuthenticatedView({
   return <AuthenticatedWithScheduleView schedule={schedule} />
 }
 
-export function ScheduleDetailsScreen({ route }: any) {
-  const { isoDate } = route.params
+export default function ScheduleDetailsScreen() {
+  const { isoDate } = useLocalSearchParams<{ isoDate: string }>()
+
   return (
     <IsAuthenticatedView>
       {(user) => <AuthenticatedView userId={user.uid} isoDate={isoDate} />}

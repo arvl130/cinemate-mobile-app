@@ -16,13 +16,11 @@ import type { MovieDetails } from "tmdb-ts"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useRefreshOnFocus } from "../../../src/utils/refresh-on-focus"
 import { Review } from "../../../src/types/review"
-import { useNavigation } from "@react-navigation/native"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { IsAuthenticatedView } from "../../../src/components/is-authenticated"
 import { Entypo } from "@expo/vector-icons"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { AppStackProp } from "../../../src/types/routes"
 import { GradientBackground } from "../../../src/components/gradient-bg"
+import { router, useLocalSearchParams } from "expo-router"
 
 function OverallRating({ movieId }: { movieId: number }) {
   const { isLoading, isError, data, refetch } = useQuery({
@@ -130,7 +128,6 @@ function ScheduleButton({
     queryFn: () => getSchedules(userId),
   })
   useRefreshOnFocus(refetch)
-  const navigation = useNavigation<AppStackProp>()
 
   if (isLoading) return <Text className="text-white">...</Text>
   if (isError) return <Text className="text-red-500">error</Text>
@@ -146,8 +143,11 @@ function ScheduleButton({
         activeOpacity={0.8}
         className="border-2 bg-gray-100 rounded-md"
         onPress={() => {
-          navigation.navigate("Schedule Details", {
-            isoDate: pendingScheduleForThisMovie.isoDate,
+          router.push({
+            pathname: "/schedules/[isoDate]",
+            params: {
+              isoDate: pendingScheduleForThisMovie.isoDate,
+            },
           })
         }}
       >
@@ -160,8 +160,11 @@ function ScheduleButton({
       activeOpacity={0.8}
       className="border-2 bg-gray-100 rounded-md"
       onPress={() => {
-        navigation.navigate("Create Schedule", {
-          movieId,
+        router.push({
+          pathname: "/movies/[movieId]/schedules/create",
+          params: {
+            movieId,
+          },
         })
       }}
     >
@@ -339,8 +342,6 @@ function ReviewSectionItem({
     return `${month}/${day}/${date.getFullYear()}`
   }
 
-  const navigation = useNavigation<AppStackProp>()
-
   return (
     <View>
       <View className="flex-row gap-3 items-center mb-3">
@@ -401,8 +402,11 @@ function ReviewSectionItem({
           {review.userId === currentUserId && (
             <TouchableOpacity
               onPress={() => {
-                navigation.push("Edit Review", {
-                  movieId: review.movieId,
+                router.push({
+                  pathname: "/movies/[movieId]/review/edit",
+                  params: {
+                    movieId: review.movieId,
+                  },
                 })
               }}
             >
@@ -503,14 +507,6 @@ function ReviewSection({ movieId }: { movieId: number }) {
   })
   useRefreshOnFocus(refetch)
 
-  const navigation = useNavigation<
-    NativeStackNavigationProp<{
-      "Create Review": {
-        movieId: number
-      }
-    }>
-  >()
-
   return (
     <>
       <Text className="text-white font-semibold text-base mt-3">
@@ -538,8 +534,11 @@ function ReviewSection({ movieId }: { movieId: number }) {
                         movieId={movieId}
                         reviews={data}
                         goToCreateReview={() => {
-                          navigation.navigate("Create Review", {
-                            movieId,
+                          router.push({
+                            pathname: "/movies/[movieId]/schedules/create",
+                            params: {
+                              movieId,
+                            },
                           })
                         }}
                       />
@@ -571,11 +570,11 @@ function LongInfo({ movieDetails }: { movieDetails: MovieDetails }) {
   )
 }
 
-export function MovieDetailsScreen({ route }: any) {
-  const { movieId } = route.params
+export default function MovieDetailsScreen() {
+  const { movieId } = useLocalSearchParams<{ movieId: string }>()
   const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["movieDetails", movieId],
-    queryFn: () => getMovieDetails(movieId),
+    queryFn: () => getMovieDetails(Number(movieId)),
   })
   useRefreshOnFocus(refetch)
 

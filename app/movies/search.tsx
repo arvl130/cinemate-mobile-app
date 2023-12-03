@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native"
 import { LinearGradient } from "expo-linear-gradient"
 import {
   Image,
@@ -10,15 +9,12 @@ import {
 } from "react-native"
 import { useState } from "react"
 import type { MovieListEntry } from "../../src/types/Movie"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { searchMovies } from "../../src/utils/api"
 import type { Movie } from "tmdb-ts"
 import { GradientBackground } from "../../src/components/gradient-bg"
-import { AppStackProp } from "../../src/types/routes"
+import { router } from "expo-router"
 
 function SearchResult({ movie }: { movie: MovieListEntry }) {
-  const navigation = useNavigation<AppStackProp>()
-
   return (
     <>
       <TouchableOpacity
@@ -26,8 +22,11 @@ function SearchResult({ movie }: { movie: MovieListEntry }) {
         activeOpacity={0.8}
         className="[background-color:_#353535] h-24 flex-row mb-2"
         onPress={() => {
-          navigation.navigate("Movie Details", {
-            movieId: movie.id,
+          router.push({
+            pathname: "/movies/[movieId]/details",
+            params: {
+              movieId: movie.id,
+            },
           })
         }}
       >
@@ -229,16 +228,7 @@ function SearchResultsSection({
   )
 }
 
-export function SearchScreen({ route }: any) {
-  const navigation = useNavigation<
-    NativeStackNavigationProp<{
-      Home: undefined
-      Search: {
-        query: string
-      }
-    }>
-  >()
-
+export default function SearchScreen({ route }: any) {
   const [searchTerm, setSearchTerm] = useState("")
   const [searchResults, setSearchResults] = useState<Movie[]>([])
   const [isLoading, setIsLoading] = useState(false)

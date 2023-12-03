@@ -15,10 +15,7 @@ import { getMovieDetails, getSchedules } from "../../src/utils/api"
 import { IsAuthenticatedView } from "../../src/components/is-authenticated"
 import { Schedule } from "../../src/types/schedule"
 import { useRefreshOnFocus } from "../../src/utils/refresh-on-focus"
-import { useNavigation } from "@react-navigation/native"
-import { AppStackProp } from "../../src/types/routes"
-
-const { height } = Dimensions.get("window")
+import { router } from "expo-router"
 
 function CinemateLogo() {
   return (
@@ -67,8 +64,6 @@ function SchedulesSectionItem({ schedule }: { schedule: Schedule }) {
     queryFn: () => getMovieDetails(schedule.movieId),
   })
 
-  const navigation = useNavigation<AppStackProp>()
-
   function formattedDate(dateStr: string) {
     const date = new Date(dateStr)
     const monthInt = date.getMonth() + 1
@@ -87,8 +82,11 @@ function SchedulesSectionItem({ schedule }: { schedule: Schedule }) {
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={() => {
-        navigation.push("Schedule Details", {
-          isoDate: schedule.isoDate,
+        router.push({
+          pathname: "/schedules/[isoDate]",
+          params: {
+            isoDate: schedule.isoDate,
+          },
         })
       }}
     >

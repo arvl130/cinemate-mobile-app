@@ -29,7 +29,7 @@ function AppName() {
   )
 }
 
-export function ForgotPasswordScreen() {
+export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("")
   return (
     <View className="flex-1 relative">

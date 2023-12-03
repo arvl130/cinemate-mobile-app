@@ -13,21 +13,21 @@ import {
   getAiMovieRecommendations,
   getAiMovieRecommendationsByCategory,
 } from "../../src/utils/api"
-import { useNavigation } from "@react-navigation/native"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
-import { AppStackProp } from "../../src/types/routes"
 import { Movie } from "tmdb-ts"
+import { router } from "expo-router"
 
 function MovieResultItem({ movie }: { movie: Movie }) {
-  const navigation = useNavigation<AppStackProp>()
-
   return (
     <TouchableOpacity
       activeOpacity={0.6}
       onPress={() => {
-        navigation.navigate("Movie Details", {
-          movieId: movie.id,
+        router.push({
+          pathname: "/movies/[movieId]/details",
+          params: {
+            movieId: movie.id,
+          },
         })
       }}
       className="mb-4"
@@ -55,7 +55,7 @@ function MovieResultItem({ movie }: { movie: Movie }) {
   )
 }
 
-export function AskChatGPTScreen() {
+export default function AskChatGPTScreen() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>(
     categoryTypes[0]
   )
