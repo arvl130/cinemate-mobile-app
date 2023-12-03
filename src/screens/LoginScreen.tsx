@@ -31,14 +31,14 @@ function AppName() {
 }
 
 function SignInForm({
-  onSubmitFn,
   onForgotPasswordFn,
 }: {
-  onSubmitFn: (email: string, password: string) => Promise<void>
   onForgotPasswordFn: () => void
 }) {
+  const [isSigningIn, setIsSigningIn] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+
   return (
     <View className="px-12">
       <Text className="text-white my-1 font-medium">EMAIL</Text>
@@ -66,15 +66,34 @@ function SignInForm({
         </TouchableOpacity>
       </View>
       <TouchableOpacity
-        activeOpacity={0.8}
-        className="[background-color:_#FE6007] rounded-md"
+        activeOpacity={0.6}
         onPress={async () => {
-          await onSubmitFn(email, password)
-          setEmail("")
-          setPassword("")
+          setIsSigningIn(true)
+          try {
+            await signInWithEmailAndPassword(auth, email, password)
+            setEmail("")
+          } catch {
+            Alert.alert(
+              "Invalid",
+              "You have entered an invalid email or password."
+            )
+          } finally {
+            setIsSigningIn(false)
+            setPassword("")
+          }
         }}
       >
-        <Text className="text-white text-center py-3 font-medium">LOGIN</Text>
+        <View
+          style={{
+            opacity: isSigningIn ? 0.6 : 1,
+            backgroundColor: "#FE6007",
+            borderRadius: 6,
+          }}
+        >
+          <Text className="text-white text-center py-3 font-medium">
+            {isSigningIn ? "LOGGING IN ..." : "LOGIN"}
+          </Text>
+        </View>
       </TouchableOpacity>
     </View>
   )
@@ -139,16 +158,6 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
 
       <AppName />
       <SignInForm
-        onSubmitFn={async (email, password) => {
-          try {
-            await signInWithEmailAndPassword(auth, email, password)
-          } catch {
-            Alert.alert(
-              "Invalid",
-              "You have entered an invalid email or password."
-            )
-          }
-        }}
         onForgotPasswordFn={() => {
           navigation.navigate("Forgot Password")
         }}
