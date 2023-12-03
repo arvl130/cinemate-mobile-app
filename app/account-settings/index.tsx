@@ -16,9 +16,9 @@ import {
   updateProfile,
 } from "firebase/auth"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { auth } from "../../firebase"
-import { GradientBackground } from "../../components/gradient-bg"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
+import { auth } from "../../src/firebase"
+import { GradientBackground } from "../../src/components/gradient-bg"
+import { IsAuthenticatedView } from "../../src/components/is-authenticated"
 import Modal from "react-native-modal"
 import { useState } from "react"
 import { Ionicons } from "@expo/vector-icons"

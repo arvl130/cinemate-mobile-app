@@ -10,17 +10,17 @@ import type { ViewToken } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { useRef, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
-import { MovieListEntry } from "../../types/Movie"
-import { AppStackProp } from "../../types/routes"
-import { GradientBackground } from "../../components/gradient-bg"
+import { MovieListEntry } from "../src/types/Movie"
+import { AppStackProp } from "../src/types/routes"
+import { GradientBackground } from "../src/components/gradient-bg"
 import { useQuery } from "@tanstack/react-query"
 import {
   getAiMovieRecommendations,
   getPopularMovies,
   getTrendingMovies,
-} from "../../utils/api"
+} from "../src/utils/api"
 import { Movie, MovieDetails } from "tmdb-ts"
-import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
+import { useRefreshOnFocus } from "../src/utils/refresh-on-focus"
 
 function SearchSection() {
   const navigation = useNavigation<AppStackProp>()
@@ -30,7 +30,7 @@ function SearchSection() {
       <View className="flex-row justify-center items-center gap-3 mt-3 mb-6">
         <Image
           className="h-12 w-12"
-          source={require("../../assets/cinemate-logo.png")}
+          source={require("../assets/cinemate-logo.png")}
         />
         <Text
           className="text-white text-center text-2xl"
@@ -347,7 +347,7 @@ function PopularSection() {
   )
 }
 
-export function HomeScreen() {
+export default function HomeScreen() {
   return (
     <View>
       <GradientBackground />

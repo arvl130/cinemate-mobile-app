@@ -4,10 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Entypo } from "@expo/vector-icons"
 import { useMutation } from "@tanstack/react-query"
-import { createMovieReview } from "../../utils/api"
+import { createMovieReview } from "../../../../src/utils/api"
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { GradientBackground } from "../../components/gradient-bg"
+import { GradientBackground } from "../../../../src/components/gradient-bg"
 
 const formSchema = z.object({
   details: z.string().min(1),

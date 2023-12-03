@@ -6,18 +6,22 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { GradientBackground } from "../../components/gradient-bg"
+import { GradientBackground } from "../../../../src/components/gradient-bg"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { createSchedule, getFriends, getUserProfile } from "../../utils/api"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
+import {
+  createSchedule,
+  getFriends,
+  getUserProfile,
+} from "../../../../src/utils/api"
+import { IsAuthenticatedView } from "../../../../src/components/is-authenticated"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DateTime } from "luxon"
 import { useNavigation } from "@react-navigation/native"
-import { AppStackProp } from "../../types/routes"
+import { AppStackProp } from "../../../../src/types/routes"
 import * as Notifications from "expo-notifications"
 
 function DatePicker({
@@ -169,7 +173,7 @@ function FriendsPickerItem({
         ) : (
           <Image
             className="w-full h-full rounded-full"
-            source={require("../../assets/no-photo-url.jpg")}
+            source={require("../../../../assets/no-photo-url.jpg")}
           />
         )}
       </View>

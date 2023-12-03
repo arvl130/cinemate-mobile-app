@@ -10,7 +10,7 @@ import {
   Alert,
 } from "react-native"
 import { Dimensions } from "react-native"
-import { auth } from "../firebase"
+import { auth } from "../src/firebase"
 
 function AppName() {
   return (

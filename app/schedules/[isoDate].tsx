@@ -1,6 +1,6 @@
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native"
-import { GradientBackground } from "../../components/gradient-bg"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
+import { GradientBackground } from "../../src/components/gradient-bg"
+import { IsAuthenticatedView } from "../../src/components/is-authenticated"
 import {
   addWatchedMovie,
   editSchedule,
@@ -12,15 +12,15 @@ import {
   getWatchedMovies,
   getWatchlistMovies,
   removeWatchlistMovie,
-} from "../../utils/api"
+} from "../../src/utils/api"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { Schedule, ScheduleInvite } from "../../types/schedule"
+import { Schedule, ScheduleInvite } from "../../src/types/schedule"
 import { MovieDetails } from "tmdb-ts"
-import { AppStackProp } from "../../types/routes"
+import { AppStackProp } from "../../src/types/routes"
 import { useNavigation } from "@react-navigation/native"
 import Modal from "react-native-modal"
 import { useState } from "react"
-import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
+import { useRefreshOnFocus } from "../../src/utils/refresh-on-focus"
 
 function ScheduleDoneConfirmationModal({
   isVisible,

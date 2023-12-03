@@ -9,14 +9,14 @@ import {
   SafeAreaView,
 } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
-import { GradientBackground } from "../../components/gradient-bg"
+import { GradientBackground } from "../../src/components/gradient-bg"
 import { useQuery } from "@tanstack/react-query"
-import { getMovieDetails, getSchedules } from "../../utils/api"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
-import { Schedule } from "../../types/schedule"
-import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
+import { getMovieDetails, getSchedules } from "../../src/utils/api"
+import { IsAuthenticatedView } from "../../src/components/is-authenticated"
+import { Schedule } from "../../src/types/schedule"
+import { useRefreshOnFocus } from "../../src/utils/refresh-on-focus"
 import { useNavigation } from "@react-navigation/native"
-import { AppStackProp } from "../../types/routes"
+import { AppStackProp } from "../../src/types/routes"
 
 const { height } = Dimensions.get("window")
 

@@ -9,7 +9,7 @@ import {
   Dimensions,
   Alert,
 } from "react-native"
-import { auth } from "../firebase"
+import { auth } from "../src/firebase"
 import { updateProfile } from "firebase/auth"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { useState } from "react"

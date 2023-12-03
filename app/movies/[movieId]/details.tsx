@@ -11,18 +11,18 @@ import {
   getWatchedMovies,
   removeWatchedMovie,
   removeWatchlistMovie,
-} from "../../utils/api"
+} from "../../../src/utils/api"
 import type { MovieDetails } from "tmdb-ts"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
-import { Review } from "../../types/review"
+import { useRefreshOnFocus } from "../../../src/utils/refresh-on-focus"
+import { Review } from "../../../src/types/review"
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
+import { IsAuthenticatedView } from "../../../src/components/is-authenticated"
 import { Entypo } from "@expo/vector-icons"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { AppStackProp } from "../../types/routes"
-import { GradientBackground } from "../../components/gradient-bg"
+import { AppStackProp } from "../../../src/types/routes"
+import { GradientBackground } from "../../../src/components/gradient-bg"
 
 function OverallRating({ movieId }: { movieId: number }) {
   const { isLoading, isError, data, refetch } = useQuery({
@@ -348,7 +348,7 @@ function ReviewSectionItem({
           {data === undefined ? (
             <Image
               className="w-full h-full rounded-full"
-              source={require("../../assets/no-photo-url.jpg")}
+              source={require("../../../assets/no-photo-url.jpg")}
             />
           ) : (
             <>
@@ -362,7 +362,7 @@ function ReviewSectionItem({
               ) : (
                 <Image
                   className="w-full h-full rounded-full"
-                  source={require("../../assets/no-photo-url.jpg")}
+                  source={require("../../../assets/no-photo-url.jpg")}
                 />
               )}
             </>

@@ -1,25 +1,30 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { FlatList, TouchableOpacity, View } from "react-native"
 import {
-  getFriends,
+  addFriend,
+  getFriendsOfUser,
   getMovieDetails,
   getReviewedMovies,
   getSchedules,
   getUserProfile,
   getWatchedMovies,
   getWatchlistMovies,
-} from "../../utils/api"
+  removeFriend,
+} from "../../../src/utils/api"
 import { Text, Image } from "react-native"
 import Modal from "react-native-modal"
 import { ReactNode, useEffect, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
-import { AppStackProp } from "../../types/routes"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
-import { Review } from "../../types/review"
+import { AppStackProp } from "../../../src/types/routes"
+import { IsAuthenticatedView } from "../../../src/components/is-authenticated"
+import { getFriends } from "../../../src/utils/api"
+import { Review } from "../../../src/types/review"
 import { Entypo, Ionicons } from "@expo/vector-icons"
-import { GradientBackground } from "../../components/gradient-bg"
-import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
-import { HamburgerMenu } from "../../components/hamburger-menu"
+import { GradientBackground } from "../../../src/components/gradient-bg"
+import { useRefreshOnFocus } from "../../../src/utils/refresh-on-focus"
+import { HamburgerMenu } from "../../../src/components/hamburger-menu"
+import { getBlockedUsers } from "../../../src/utils/api"
+import { addBlockedUser } from "../../../src/utils/api"
 
 function MovieItem({ movieId }: { movieId: number }) {
   const { isLoading, isError, data } = useQuery({
@@ -335,13 +340,115 @@ function ProfileTab({
   )
 }
 
-function OtherSettingsModal({
+function FriendButtons({
+  userId,
+  friendId,
+}: {
+  userId: string
+  friendId: string
+}) {
+  const {
+    isLoading,
+    isError,
+    data: friends,
+    refetch,
+  } = useQuery({
+    queryKey: ["getFriends", userId],
+    queryFn: () => getFriends(),
+  })
+
+  const { mutate: doAddFriend } = useMutation({
+    mutationKey: ["addFriend", userId, friendId],
+    mutationFn: (values: { friendId: string }) => addFriend(values.friendId),
+    onSuccess: () => refetch(),
+  })
+
+  const { mutate: doRemoveFriend } = useMutation({
+    mutationKey: ["removeFriend", userId, friendId],
+    mutationFn: (values: { friendId: string }) => removeFriend(values.friendId),
+    onSuccess: () => refetch(),
+  })
+
+  if (isLoading)
+    return (
+      <View>
+        <Text className="text-white text-center">Loading ...</Text>
+      </View>
+    )
+
+  if (isError)
+    return (
+      <View>
+        <Text className="text-red-500 text-center">
+          An error occured while retrieving friends.
+        </Text>
+      </View>
+    )
+
+  const isFriend = friends.some((friend) => friend.friendId === friendId)
+
+  if (isFriend)
+    return (
+      <View>
+        <TouchableOpacity
+          activeOpacity={0.6}
+          className="bg-red-500 rounded-md font-medium mb-3"
+          onPress={() => doRemoveFriend({ friendId })}
+        >
+          <Text className="text-white text-center py-3 font-medium">
+            Remove Friend
+          </Text>
+        </TouchableOpacity>
+      </View>
+    )
+  else
+    return (
+      <View>
+        <TouchableOpacity
+          activeOpacity={0.6}
+          className="[background-color:_#FE6007] rounded-md font-medium mb-3"
+          onPress={() => doAddFriend({ friendId })}
+        >
+          <Text className="text-white text-center py-3 font-medium">
+            Add Friend
+          </Text>
+        </TouchableOpacity>
+      </View>
+    )
+}
+
+function OtherActionsModal({
+  userId,
+  friendId,
   isVisible,
   closeFn,
 }: {
+  userId: string
+  friendId: string
   isVisible: boolean
   closeFn: () => void
 }) {
+  const { refetch: refetchFriends } = useQuery({
+    queryKey: ["getFriends", userId],
+    queryFn: () => getFriends(),
+  })
+  const { refetch: refetchBlockedUsers } = useQuery({
+    queryKey: ["getBlockedUsers", userId],
+    queryFn: () => getBlockedUsers(),
+  })
+
+  const { mutate: doAddFriend } = useMutation({
+    mutationKey: ["addFriend", userId, friendId],
+    mutationFn: () => addFriend(friendId),
+    onSuccess: () => refetchFriends(),
+  })
+
+  const { mutate: doAddBlockedUser } = useMutation({
+    mutationKey: ["addBlockedUser", userId, friendId],
+    mutationFn: () => addBlockedUser(friendId),
+    onSuccess: () => refetchBlockedUsers(),
+  })
+
   const navigation = useNavigation<AppStackProp>()
 
   return (
@@ -361,20 +468,23 @@ function OtherSettingsModal({
           <TouchableOpacity
             className="py-3"
             onPress={() => {
-              navigation.push("Account Settings")
+              doAddFriend()
               closeFn()
             }}
           >
-            <Text className="text-white">Account Settings</Text>
+            <Text className="text-white">Add Friend</Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="py-3"
             onPress={() => {
-              navigation.push("Blocked Users")
+              doAddBlockedUser()
               closeFn()
+              navigation.navigate("Authenticated Tabs", {
+                screen: "Friends Tab",
+              })
             }}
           >
-            <Text className="text-white">Blocked Users</Text>
+            <Text className="text-white">Block User</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -390,7 +500,7 @@ function FriendsCount({ userId }: { userId: string }) {
     refetch,
   } = useQuery({
     queryKey: ["getFriends", userId],
-    queryFn: () => getFriends(),
+    queryFn: () => getFriendsOfUser(userId),
   })
   useRefreshOnFocus(refetch)
 
@@ -494,16 +604,28 @@ function ScheduledCount({ userId }: { userId: string }) {
   )
 }
 
-export function UserLodaded({ userId }: { userId: string }) {
+export function FriendProfileScreen({ route }: any) {
+  const { friendId } = route.params
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
+  const navigation = useNavigation()
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HamburgerMenu actionFn={() => setIsModalVisible(true)} />
+      ),
+    })
+  }, [])
+
   const {
     isLoading,
     isError,
     data: userRecord,
     refetch,
   } = useQuery({
-    queryKey: ["userProfile", userId],
+    queryKey: ["userProfile", friendId],
     queryFn: () => {
-      return getUserProfile(userId)
+      return getUserProfile(friendId)
     },
   })
   useRefreshOnFocus(refetch)
@@ -512,34 +634,24 @@ export function UserLodaded({ userId }: { userId: string }) {
     "WATCHED" | "WATCHLIST" | "SCHEDULED" | "REVIEWED"
   >("WATCHED")
 
-  const [isOtherSettingsModalVisible, setIsOtherSettingsModalVisible] =
-    useState(false)
-
-  const navigation = useNavigation()
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <HamburgerMenu actionFn={() => setIsOtherSettingsModalVisible(true)} />
-      ),
-    })
-  }, [])
-
   return (
     <View className="flex-1 px-3">
       <GradientBackground />
 
       <>
         {isLoading ? (
-          <Text>Loading ...</Text>
+          <Text className="text-white">Loading ...</Text>
         ) : (
           <>
             {isError ? (
-              <Text>An error occured while</Text>
+              <Text className="text-white">
+                An error occured while loading user.
+              </Text>
             ) : (
               <>
                 <View>
                   <View className="flex-row justify-center mb-3">
-                    <View className="w-24 h-24">
+                    <View className="w-20 h-20">
                       {userRecord.photoURL ? (
                         <Image
                           className="w-full h-full rounded-full"
@@ -550,7 +662,7 @@ export function UserLodaded({ userId }: { userId: string }) {
                       ) : (
                         <Image
                           className="w-full h-full rounded-full"
-                          source={require("../../assets/no-photo-url.jpg")}
+                          source={require("../../../assets/no-photo-url.jpg")}
                         />
                       )}
                     </View>
@@ -570,6 +682,11 @@ export function UserLodaded({ userId }: { userId: string }) {
                         <WatchedCount userId={user.uid} />
                         <ScheduledCount userId={user.uid} />
                       </View>
+                    )}
+                  </IsAuthenticatedView>
+                  <IsAuthenticatedView>
+                    {(user) => (
+                      <FriendButtons userId={user.uid} friendId={friendId} />
                     )}
                   </IsAuthenticatedView>
                   <View className="flex-row justify-evenly">
@@ -599,33 +716,37 @@ export function UserLodaded({ userId }: { userId: string }) {
                     </ProfileTab>
                   </View>
                 </View>
-                {selectedTab === "WATCHED" && <WatchedTab friendId={userId} />}
+                {selectedTab === "WATCHED" && (
+                  <WatchedTab friendId={friendId} />
+                )}
                 {selectedTab === "WATCHLIST" && (
-                  <WatchlistTab friendId={userId} />
+                  <WatchlistTab friendId={friendId} />
                 )}
                 {selectedTab === "SCHEDULED" && (
-                  <ScheduledTab friendId={userId} />
+                  <ScheduledTab friendId={friendId} />
                 )}
                 {selectedTab === "REVIEWED" && (
-                  <ReviewedTab friendId={userId} />
+                  <ReviewedTab friendId={friendId} />
                 )}
-                <OtherSettingsModal
-                  isVisible={isOtherSettingsModalVisible}
-                  closeFn={() => setIsOtherSettingsModalVisible(false)}
-                />
+                <IsAuthenticatedView>
+                  {(user) => (
+                    <>
+                      {isModalVisible && (
+                        <OtherActionsModal
+                          userId={user.uid}
+                          friendId={friendId}
+                          isVisible={isModalVisible}
+                          closeFn={() => setIsModalVisible(false)}
+                        />
+                      )}
+                    </>
+                  )}
+                </IsAuthenticatedView>
               </>
             )}
           </>
         )}
       </>
     </View>
-  )
-}
-
-export function MyProfileScreen({ route }: any) {
-  return (
-    <IsAuthenticatedView>
-      {(user) => <UserLodaded userId={user.uid} />}
-    </IsAuthenticatedView>
   )
 }

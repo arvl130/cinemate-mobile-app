@@ -1,30 +1,25 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { FlatList, TouchableOpacity, View } from "react-native"
 import {
-  addFriend,
-  getFriendsOfUser,
+  getFriends,
   getMovieDetails,
   getReviewedMovies,
   getSchedules,
   getUserProfile,
   getWatchedMovies,
   getWatchlistMovies,
-  removeFriend,
-} from "../../utils/api"
+} from "../../src/utils/api"
 import { Text, Image } from "react-native"
 import Modal from "react-native-modal"
 import { ReactNode, useEffect, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
-import { AppStackProp } from "../../types/routes"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
-import { getFriends } from "../../utils/api"
-import { Review } from "../../types/review"
+import { AppStackProp } from "../../src/types/routes"
+import { IsAuthenticatedView } from "../../src/components/is-authenticated"
+import { Review } from "../../src/types/review"
 import { Entypo, Ionicons } from "@expo/vector-icons"
-import { GradientBackground } from "../../components/gradient-bg"
-import { useRefreshOnFocus } from "../../utils/refresh-on-focus"
-import { HamburgerMenu } from "../../components/hamburger-menu"
-import { getBlockedUsers } from "../../utils/api"
-import { addBlockedUser } from "../../utils/api"
+import { GradientBackground } from "../../src/components/gradient-bg"
+import { useRefreshOnFocus } from "../../src/utils/refresh-on-focus"
+import { HamburgerMenu } from "../../src/components/hamburger-menu"
 
 function MovieItem({ movieId }: { movieId: number }) {
   const { isLoading, isError, data } = useQuery({
@@ -340,115 +335,13 @@ function ProfileTab({
   )
 }
 
-function FriendButtons({
-  userId,
-  friendId,
-}: {
-  userId: string
-  friendId: string
-}) {
-  const {
-    isLoading,
-    isError,
-    data: friends,
-    refetch,
-  } = useQuery({
-    queryKey: ["getFriends", userId],
-    queryFn: () => getFriends(),
-  })
-
-  const { mutate: doAddFriend } = useMutation({
-    mutationKey: ["addFriend", userId, friendId],
-    mutationFn: (values: { friendId: string }) => addFriend(values.friendId),
-    onSuccess: () => refetch(),
-  })
-
-  const { mutate: doRemoveFriend } = useMutation({
-    mutationKey: ["removeFriend", userId, friendId],
-    mutationFn: (values: { friendId: string }) => removeFriend(values.friendId),
-    onSuccess: () => refetch(),
-  })
-
-  if (isLoading)
-    return (
-      <View>
-        <Text className="text-white text-center">Loading ...</Text>
-      </View>
-    )
-
-  if (isError)
-    return (
-      <View>
-        <Text className="text-red-500 text-center">
-          An error occured while retrieving friends.
-        </Text>
-      </View>
-    )
-
-  const isFriend = friends.some((friend) => friend.friendId === friendId)
-
-  if (isFriend)
-    return (
-      <View>
-        <TouchableOpacity
-          activeOpacity={0.6}
-          className="bg-red-500 rounded-md font-medium mb-3"
-          onPress={() => doRemoveFriend({ friendId })}
-        >
-          <Text className="text-white text-center py-3 font-medium">
-            Remove Friend
-          </Text>
-        </TouchableOpacity>
-      </View>
-    )
-  else
-    return (
-      <View>
-        <TouchableOpacity
-          activeOpacity={0.6}
-          className="[background-color:_#FE6007] rounded-md font-medium mb-3"
-          onPress={() => doAddFriend({ friendId })}
-        >
-          <Text className="text-white text-center py-3 font-medium">
-            Add Friend
-          </Text>
-        </TouchableOpacity>
-      </View>
-    )
-}
-
-function OtherActionsModal({
-  userId,
-  friendId,
+function OtherSettingsModal({
   isVisible,
   closeFn,
 }: {
-  userId: string
-  friendId: string
   isVisible: boolean
   closeFn: () => void
 }) {
-  const { refetch: refetchFriends } = useQuery({
-    queryKey: ["getFriends", userId],
-    queryFn: () => getFriends(),
-  })
-  const { refetch: refetchBlockedUsers } = useQuery({
-    queryKey: ["getBlockedUsers", userId],
-    queryFn: () => getBlockedUsers(),
-  })
-
-  const { mutate: doAddFriend } = useMutation({
-    mutationKey: ["addFriend", userId, friendId],
-    mutationFn: () => addFriend(friendId),
-    onSuccess: () => refetchFriends(),
-  })
-
-  const { mutate: doAddBlockedUser } = useMutation({
-    mutationKey: ["addBlockedUser", userId, friendId],
-    mutationFn: () => addBlockedUser(friendId),
-    onSuccess: () => refetchBlockedUsers(),
-  })
-
   const navigation = useNavigation<AppStackProp>()
 
   return (
@@ -468,23 +361,20 @@ function OtherActionsModal({
           <TouchableOpacity
             className="py-3"
             onPress={() => {
-              doAddFriend()
+              navigation.push("Account Settings")
               closeFn()
             }}
           >
-            <Text className="text-white">Add Friend</Text>
+            <Text className="text-white">Account Settings</Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="py-3"
             onPress={() => {
-              doAddBlockedUser()
+              navigation.push("Blocked Users")
               closeFn()
-              navigation.navigate("Authenticated Tabs", {
-                screen: "Friends Tab",
-              })
             }}
           >
-            <Text className="text-white">Block User</Text>
+            <Text className="text-white">Blocked Users</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -500,7 +390,7 @@ function FriendsCount({ userId }: { userId: string }) {
     refetch,
   } = useQuery({
     queryKey: ["getFriends", userId],
-    queryFn: () => getFriendsOfUser(userId),
+    queryFn: () => getFriends(),
   })
   useRefreshOnFocus(refetch)
 
@@ -604,28 +494,16 @@ function ScheduledCount({ userId }: { userId: string }) {
   )
 }
 
-export function FriendProfileScreen({ route }: any) {
-  const { friendId } = route.params
-  const [isModalVisible, setIsModalVisible] = useState(false)
-
-  const navigation = useNavigation()
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <HamburgerMenu actionFn={() => setIsModalVisible(true)} />
-      ),
-    })
-  }, [])
-
+export function UserLodaded({ userId }: { userId: string }) {
   const {
     isLoading,
     isError,
     data: userRecord,
     refetch,
   } = useQuery({
-    queryKey: ["userProfile", friendId],
+    queryKey: ["userProfile", userId],
     queryFn: () => {
-      return getUserProfile(friendId)
+      return getUserProfile(userId)
     },
   })
   useRefreshOnFocus(refetch)
@@ -634,24 +512,34 @@ export function FriendProfileScreen({ route }: any) {
     "WATCHED" | "WATCHLIST" | "SCHEDULED" | "REVIEWED"
   >("WATCHED")
 
+  const [isOtherSettingsModalVisible, setIsOtherSettingsModalVisible] =
+    useState(false)
+
+  const navigation = useNavigation()
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HamburgerMenu actionFn={() => setIsOtherSettingsModalVisible(true)} />
+      ),
+    })
+  }, [])
+
   return (
     <View className="flex-1 px-3">
       <GradientBackground />
 
       <>
         {isLoading ? (
-          <Text className="text-white">Loading ...</Text>
+          <Text>Loading ...</Text>
         ) : (
           <>
             {isError ? (
-              <Text className="text-white">
-                An error occured while loading user.
-              </Text>
+              <Text>An error occured while</Text>
             ) : (
               <>
                 <View>
                   <View className="flex-row justify-center mb-3">
-                    <View className="w-20 h-20">
+                    <View className="w-24 h-24">
                       {userRecord.photoURL ? (
                         <Image
                           className="w-full h-full rounded-full"
@@ -684,11 +572,6 @@ export function FriendProfileScreen({ route }: any) {
                       </View>
                     )}
                   </IsAuthenticatedView>
-                  <IsAuthenticatedView>
-                    {(user) => (
-                      <FriendButtons userId={user.uid} friendId={friendId} />
-                    )}
-                  </IsAuthenticatedView>
                   <View className="flex-row justify-evenly">
                     <ProfileTab
                       isSelected={selectedTab === "WATCHED"}
@@ -716,37 +599,33 @@ export function FriendProfileScreen({ route }: any) {
                     </ProfileTab>
                   </View>
                 </View>
-                {selectedTab === "WATCHED" && (
-                  <WatchedTab friendId={friendId} />
-                )}
+                {selectedTab === "WATCHED" && <WatchedTab friendId={userId} />}
                 {selectedTab === "WATCHLIST" && (
-                  <WatchlistTab friendId={friendId} />
+                  <WatchlistTab friendId={userId} />
                 )}
                 {selectedTab === "SCHEDULED" && (
-                  <ScheduledTab friendId={friendId} />
+                  <ScheduledTab friendId={userId} />
                 )}
                 {selectedTab === "REVIEWED" && (
-                  <ReviewedTab friendId={friendId} />
+                  <ReviewedTab friendId={userId} />
                 )}
-                <IsAuthenticatedView>
-                  {(user) => (
-                    <>
-                      {isModalVisible && (
-                        <OtherActionsModal
-                          userId={user.uid}
-                          friendId={friendId}
-                          isVisible={isModalVisible}
-                          closeFn={() => setIsModalVisible(false)}
-                        />
-                      )}
-                    </>
-                  )}
-                </IsAuthenticatedView>
+                <OtherSettingsModal
+                  isVisible={isOtherSettingsModalVisible}
+                  closeFn={() => setIsOtherSettingsModalVisible(false)}
+                />
               </>
             )}
           </>
         )}
       </>
     </View>
+  )
+}
+
+export function MyProfileScreen({ route }: any) {
+  return (
+    <IsAuthenticatedView>
+      {(user) => <UserLodaded userId={user.uid} />}
+    </IsAuthenticatedView>
   )
 }

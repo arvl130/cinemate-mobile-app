@@ -9,12 +9,12 @@ import {
   View,
 } from "react-native"
 import { useState } from "react"
-import type { MovieListEntry } from "../../types/Movie"
+import type { MovieListEntry } from "../../src/types/Movie"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { searchMovies } from "../../utils/api"
+import { searchMovies } from "../../src/utils/api"
 import type { Movie } from "tmdb-ts"
-import { GradientBackground } from "../../components/gradient-bg"
-import { AppStackProp } from "../../types/routes"
+import { GradientBackground } from "../../src/components/gradient-bg"
+import { AppStackProp } from "../../src/types/routes"
 
 function SearchResult({ movie }: { movie: MovieListEntry }) {
   const navigation = useNavigation<AppStackProp>()

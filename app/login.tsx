@@ -10,7 +10,7 @@ import {
 import { Dimensions } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { signInWithEmailAndPassword } from "firebase/auth"
-import { auth } from "../firebase"
+import { auth } from "../src/firebase"
 import { useState } from "react"
 
 function AppName() {

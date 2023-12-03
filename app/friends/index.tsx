@@ -18,12 +18,12 @@ import {
   getFriends,
   getUserProfile,
   removeFriend,
-} from "../../utils/api"
+} from "../../src/utils/api"
 import { useNavigation } from "@react-navigation/native"
-import { AppStackProp } from "../../types/routes"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
+import { AppStackProp } from "../../src/types/routes"
+import { IsAuthenticatedView } from "../../src/components/is-authenticated"
 import { useState } from "react"
-import { GradientBackground } from "../../components/gradient-bg"
+import { GradientBackground } from "../../src/components/gradient-bg"
 
 function FriendsSectionItem({
   userId,

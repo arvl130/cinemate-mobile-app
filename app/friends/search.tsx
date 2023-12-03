@@ -9,14 +9,14 @@ import {
   View,
 } from "react-native"
 import { useState } from "react"
-import { searchUserProfiles } from "../../utils/api"
+import { searchUserProfiles } from "../../src/utils/api"
 import { z } from "zod"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
-import { UserRecord } from "../../types/user"
-import { AppStackProp } from "../../types/routes"
-import { GradientBackground } from "../../components/gradient-bg"
+import { UserRecord } from "../../src/types/user"
+import { AppStackProp } from "../../src/types/routes"
+import { GradientBackground } from "../../src/components/gradient-bg"
 
 function SearchResult({ userRecord }: { userRecord: UserRecord }) {
   const navigation = useNavigation<AppStackProp>()

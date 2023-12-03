@@ -1,12 +1,12 @@
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native"
-import { GradientBackground } from "../../components/gradient-bg"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
+import { GradientBackground } from "../../src/components/gradient-bg"
+import { IsAuthenticatedView } from "../../src/components/is-authenticated"
 import { User } from "firebase/auth"
 import {
   getBlockedUsers,
   getUserProfile,
   removeBlockedUser,
-} from "../../utils/api"
+} from "../../src/utils/api"
 import { useMutation, useQuery } from "@tanstack/react-query"
 
 function BlockedUserItem({

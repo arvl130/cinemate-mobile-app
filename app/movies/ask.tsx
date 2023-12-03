@@ -6,17 +6,17 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { GradientBackground } from "../../components/gradient-bg"
+import { GradientBackground } from "../../src/components/gradient-bg"
 import {
   CategoryType,
   categoryTypes,
   getAiMovieRecommendations,
   getAiMovieRecommendationsByCategory,
-} from "../../utils/api"
+} from "../../src/utils/api"
 import { useNavigation } from "@react-navigation/native"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
-import { AppStackProp } from "../../types/routes"
+import { AppStackProp } from "../../src/types/routes"
 import { Movie } from "tmdb-ts"
 
 function MovieResultItem({ movie }: { movie: Movie }) {

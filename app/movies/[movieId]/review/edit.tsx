@@ -8,14 +8,14 @@ import {
   deleteMovieReview,
   editMovieReview,
   getMovieReview,
-} from "../../utils/api"
+} from "../../../../src/utils/api"
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { IsAuthenticatedView } from "../../components/is-authenticated"
+import { IsAuthenticatedView } from "../../../../src/components/is-authenticated"
 import { User } from "firebase/auth"
 import { useQuery } from "@tanstack/react-query"
-import { Review } from "../../types/review"
-import { GradientBackground } from "../../components/gradient-bg"
+import { Review } from "../../../../src/types/review"
+import { GradientBackground } from "../../../../src/components/gradient-bg"
 
 const formSchema = z.object({
   details: z.string().min(1),
