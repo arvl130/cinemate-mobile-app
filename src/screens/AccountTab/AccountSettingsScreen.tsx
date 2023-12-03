@@ -608,16 +608,31 @@ function UpdatePasswordSection({ user }: { user: User }) {
 }
 
 function LogoutButton() {
+  const [isSigningOut, setIsSigningOut] = useState(false)
+
   return (
     <View className="mt-6">
       <TouchableOpacity
-        activeOpacity={0.8}
-        className="bg-red-500 rounded-md"
-        onPress={() => signOut(auth)}
+        onPress={async () => {
+          setIsSigningOut(true)
+          try {
+            await signOut(auth)
+          } finally {
+            setIsSigningOut(false)
+          }
+        }}
       >
-        <Text className="text-white text-center px-4 py-3 uppercase font-medium">
-          Logout
-        </Text>
+        <View
+          style={{
+            opacity: isSigningOut ? 0.6 : 1,
+            borderRadius: 6,
+          }}
+          className="bg-red-500"
+        >
+          <Text className="text-white text-center px-4 py-3 uppercase font-medium">
+            {isSigningOut ? "Logging Out ..." : "Logout"}
+          </Text>
+        </View>
       </TouchableOpacity>
     </View>
   )
