@@ -2,6 +2,7 @@ import { Redirect, Tabs } from "expo-router"
 import { Entypo, Ionicons, FontAwesome5 } from "@expo/vector-icons"
 import { useAuthState } from "../../src/firebase"
 import { View } from "react-native"
+import { GradientBackground } from "../../src/components/gradient-bg"
 
 export default function Layout() {
   const { isLoading, isAuthenticated } = useAuthState()
@@ -11,19 +12,16 @@ export default function Layout() {
       <View
         style={{
           flex: 1,
-          backgroundColor: "black",
         }}
-      ></View>
+      >
+        <GradientBackground />
+      </View>
     )
 
   if (!isAuthenticated)
     return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "black",
-        }}
-      >
+      <View>
+        <GradientBackground />
         <Redirect href={"/login"} />
       </View>
     )
