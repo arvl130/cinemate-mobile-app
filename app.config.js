@@ -1,6 +1,7 @@
 module.exports = {
   name: "Cinemate",
   version: "1.0.0",
+  scheme: "cinemate",
   android: {
     package: "com.ageulin.cinemate",
   },
