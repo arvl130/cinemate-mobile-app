@@ -1,11 +1,10 @@
-require("dotenv").config()
-
 module.exports = {
   name: "Cinemate",
   version: "1.0.0",
   android: {
     package: "com.ageulin.cinemate",
   },
+  plugins: ["expo-router"],
   extra: {
     eas: {
       projectId: "a33dbfc2-6503-46a8-b7d8-04b75aae200d",
