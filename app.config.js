@@ -6,6 +6,9 @@ module.exports = {
     package: "com.ageulin.cinemate",
   },
   plugins: ["expo-router"],
+  experiments: {
+    typedRoutes: true,
+  },
   extra: {
     eas: {
       projectId: "a33dbfc2-6503-46a8-b7d8-04b75aae200d",
